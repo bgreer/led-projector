@@ -43,3 +43,8 @@ void print_space_coords (strip *s);
 void print_img_coords (strip *s);
 void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, float zstep);
 void free_strip (strip *s);
+
+// camera.cpp
+void display_webcam();
+void grab_frame(Mat *frame);
+void find_led (Mat *img, float *x, float *y);
