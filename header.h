@@ -7,6 +7,8 @@
 #define PI 3.14159265359
 #define TWOPI 6.28318530718
 
+#define MAXCAMS 16
+
 using namespace cv;
 
 /* trying out some data structures */
@@ -31,7 +33,18 @@ typedef struct
 	uint8_t **r, **g, **b; // [frame] [pixel]
 } strip_anim;
 
+typedef struct
+{
+	int numcams;
+	VideoCapture *cap[MAXCAMS];
+	float campos[MAXCAMS][3];
+	Mat backframe[MAXCAMS];
+	Mat foreframe[MAXCAMS];
+} scanner;
+
 /* function prototypes */
+
+void waitms (long ms);
 
 // images.cpp
 void map_image (Mat *img, strip *s);
@@ -46,5 +59,13 @@ void free_strip (strip *s);
 
 // camera.cpp
 void display_webcam();
-void grab_frame(Mat *frame);
-void find_led (Mat *img, float *x, float *y);
+void start_scan (scanner *sc, strip *st);
+void add_camera (scanner *s, VideoCapture *cap);
+void grab_frame (scanner *s, int cam, int frame);
+int find_led (scanner *s, int cam, float *x, float *y);
+
+// comm.c
+void openComm ();
+void closeComm ();
+void setPixels(strip *s);
+void sendShow();

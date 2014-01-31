@@ -89,7 +89,7 @@ void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, fl
 	{
 		z += 0.001*zstep;
 		x = r*cos(z*TWOPI/zstep);
-		y = r*sin(z*TWOPI/zstep);
+		y = -r*sin(z*TWOPI/zstep);
 		l += sqrt((x-oldx)*(x-oldx) + (y-oldy)*(y-oldy) + (z-oldz)*(z-oldz));
 		oldx = x;
 		oldy = y;
