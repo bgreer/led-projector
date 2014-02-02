@@ -6,6 +6,7 @@
 
 #define PI 3.14159265359
 #define TWOPI 6.28318530718
+#define DEGTORAD 0.01745329251
 
 #define MAXCAMS 16
 
@@ -38,6 +39,7 @@ typedef struct
 	int numcams;
 	VideoCapture *cap[MAXCAMS];
 	float campos[MAXCAMS][3];
+	float camfov[MAXCAMS]; // in degrees
 	Mat backframe[MAXCAMS];
 	Mat foreframe[MAXCAMS];
 } scanner;
@@ -45,6 +47,7 @@ typedef struct
 /* function prototypes */
 
 void waitms (long ms);
+static int getLine (char *prmpt, char *buff, size_t sz);
 
 // images.cpp
 void map_image (Mat *img, strip *s);
@@ -55,6 +58,7 @@ void print_strip (strip *s);
 void print_space_coords (strip *s);
 void print_img_coords (strip *s);
 void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, float zstep);
+void clear_strip (strip *s);
 void free_strip (strip *s);
 
 // camera.cpp

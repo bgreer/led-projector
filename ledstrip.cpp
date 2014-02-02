@@ -131,6 +131,14 @@ void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, fl
 	*/
 }
 
+void clear_strip (strip *s)
+{
+	// sizeof(uint8_t) should be obvious..
+	memset(s->r, 0, s->numpixels * sizeof(uint8_t));
+	memset(s->g, 0, s->numpixels * sizeof(uint8_t));
+	memset(s->b, 0, s->numpixels * sizeof(uint8_t));
+}
+
 void free_strip (strip *s)
 {
 	int ii;
