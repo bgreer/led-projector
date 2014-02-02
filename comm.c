@@ -6,10 +6,10 @@
 int fd;
 struct termios options;
 
-void openComm ()
+void openComm (char *fname)
 {
 
-	fd = open("/dev/ttyACM3", O_RDWR | O_NOCTTY | O_SYNC);
+	fd = open(fname, O_RDWR | O_NOCTTY | O_SYNC);
 	
 	if (fd == -1)
 	{

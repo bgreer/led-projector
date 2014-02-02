@@ -28,8 +28,15 @@ int main (int argc, char *argv[])
 	namedWindow( "Image Coords", CV_WINDOW_AUTOSIZE );
 	imshow("Image Coords", imgc);
 
-	/* open serial port */
-	openComm();
+	// a bit late, but check command line params */
+	if (argc < 2)
+	{
+		printf("Incorrect number of command-line arguments.\n Include serial port for Arduino comms.\n");
+		openComm("/dev/ttyACM0");
+	} else {
+		/* open serial port */
+		openComm(argv[1]);
+	}
 
 	map_image(&source, &s);
 

@@ -65,7 +65,7 @@ void grab_frame (scanner *s, int cam, int frame);
 int find_led (scanner *s, int cam, float *x, float *y);
 
 // comm.c
-void openComm ();
+void openComm (char *fname);
 void closeComm ();
 void setPixels(strip *s);
 void sendShow();
