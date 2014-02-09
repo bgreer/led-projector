@@ -30,28 +30,41 @@ void start_scan (scanner *sc, strip *st)
 	float a1[3], a2[3], n1[3], n2[3], nt[3];
 	float M[2][2], b[2], t[2];
 	float p[3];
+	namedWindow( "back", CV_WINDOW_AUTOSIZE );
+	namedWindow( "fore", CV_WINDOW_AUTOSIZE );
+	namedWindow( "led", CV_WINDOW_AUTOSIZE );
+
+	// clear all pixels
+	clear_strip(st);
+	setPixels(st);
+	sendShow();
 
 	for (led=0; led<st->numpixels; led++)
 	{
 		// take background
+		for (ij=0; ij<3; ij++)
+			for (ii=0; ii<sc->numcams; ii++)
+				sc->cap[ii]->grab();
 		for (ii=0; ii<sc->numcams; ii++)
 			sc->cap[ii]->grab();
 		for (ii=0; ii<sc->numcams; ii++)
 			sc->cap[ii]->retrieve(sc->backframe[ii]);
 
+
+//		imshow("back", sc->backframe[0]);
+
 		// turn on led
-		printf("Turning on LED %d\n", led);
 		clear_strip(st);
-		st->r[led] = 255;
-		st->g[led] = 255;
-		st->b[led] = 255;
+		st->r[led] = 50;
+		st->g[led] = 50;
+		st->b[led] = 50;
 		setPixels(st);
 		sendShow();
 
 		// take a few blank pictures to catch up
 		// why do i need to do this?
 		// it's dumb
-		for (ij=0; ij<10; ij++)
+		for (ij=0; ij<3; ij++)
 			for (ii=0; ii<sc->numcams; ii++)
 				sc->cap[ii]->grab();
 		// take foreground image
@@ -60,8 +73,9 @@ void start_scan (scanner *sc, strip *st)
 		for (ii=0; ii<sc->numcams; ii++)
 			sc->cap[ii]->retrieve(sc->foreframe[ii]);
 
+//		imshow("fore", sc->foreframe[0]);
+
 		// turn off led
-		printf("Turning off LED %d\n", led);
 		clear_strip(st);
 		setPixels(st);
 		sendShow();
@@ -70,6 +84,17 @@ void start_scan (scanner *sc, strip *st)
 		count = 0;
 		for (ii=0; ii<sc->numcams; ii++)
 			count += find_led(sc, ii, &(xs[ii]), &(ys[ii]));
+
+		Mat temp = sc->foreframe[0] - sc->backframe[0];
+		if (count) circle(temp, Point((xs[0]*0.5+0.5)*temp.cols, (ys[0]*0.5+0.5)*temp.rows), 10, Scalar(255,255,255),2);
+		imshow("cam1", temp);
+		char str[256];
+		sprintf(str, "frame%04d.jpg", led);
+	//	printf("%s\n", str);
+//		imwrite( str, temp );
+	//	while(1) {
+		if (char(cvWaitKey(1)) == 32) break;
+	//	}
 
 		if (count > 2)
 		{
@@ -96,6 +121,7 @@ void start_scan (scanner *sc, strip *st)
 			// that is, a camera at [1,0,0] pointed at [0,0,0]
 			// led is in y-z plane
 			// FIRST CAMERA
+			// TODO: fix dist to consider camera aspect ratio. camfov is x-fov only
 			dist = DEGTORAD * sc->camfov[0] * sqrt(xs[0]*xs[0] + ys[0]*ys[0]);
 			ang = atan2(-ys[0], xs[0]);
 			printf("led pos %f %f is at %f rad from axis, %f ang azim\n", xs[0], ys[0], dist, ang);
@@ -157,7 +183,8 @@ void start_scan (scanner *sc, strip *st)
 			// SET STRIP LED COORDS
 			memcpy(st->space_coords[led], p, 3*sizeof(float));
 		} else {
-			printf("Not enough cameras found LED %d\n", led);
+//			printf("Not enough cameras found LED %d\n", led);
+			if (count) printf("%d\t%f\t%f\n", led, xs[0], ys[0]);
 		}
 
 	}
@@ -214,5 +241,8 @@ int find_led (scanner *s, int cam, float *x, float *y)
 	*y = ((py/w)/sub.rows)*2.-1.;
 
 	// TODO: return 0 if no LED found
-	return 1;
+	if (max > 110.)
+		return 1;
+	else
+		return 0;
 }

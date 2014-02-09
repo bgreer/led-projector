@@ -11,7 +11,7 @@ int main (int argc, char *argv[])
 	Mat vidframe;
 	strip s;
 	scanner scan;
-	VideoCapture cap1(0);
+	VideoCapture cap1(1);
 //	VideoCapture cap2(1);
 	char buffer[32];
 	int ii, index;
@@ -24,15 +24,16 @@ int main (int argc, char *argv[])
 	namedWindow( "Source", CV_WINDOW_AUTOSIZE );
 	imshow("Source", source);
 
-	imgc.create(300,300,CV_8UC3);
+	imgc.create(source.cols,source.rows,CV_8UC3);
 	imgc.setTo(0);
 
 	// create strip
 	init_strip_cylinder(&s, 243, 0.0162, 0.078, 0.0185);
-
+	read_led_positions(&s, "pos01");
+	
 	// make image of led locations on source image
 	for (ii=0; ii<s.numpixels; ii++)
-		circle(imgc, Point(300*s.img_coords[ii][0],300*s.img_coords[ii][1]), 3, Scalar(255,255,255), -1);
+		circle(imgc, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(255,255,255), -1);
 	namedWindow( "Image Coords", CV_WINDOW_AUTOSIZE );
 	imshow("Image Coords", imgc);
 
@@ -49,22 +50,32 @@ int main (int argc, char *argv[])
 	map_image(&source, &s);
 
 
-	res.create(300,300,CV_8UC3);
+	res.create(source.cols,source.rows,CV_8UC3);
 	res.setTo(0);
 	for (ii=0; ii<s.numpixels; ii++)
-		circle(res, Point(300*s.img_coords[ii][0],300*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
+		circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
 	namedWindow( "Result", CV_WINDOW_AUTOSIZE );
 	imshow("Result", res);
 
 
-	setPixels(&s);
-	sendShow();
+//	setPixels(&s);
+//	sendShow();
+/*	
+	while (1)
+	{
+		if (char(cvWaitKey(1)) == 32) // 27 is esc
+			break;
+	}
+	
+*/
 
 	waitms(1500);
-	
 	// BEGIN MOVIE PROJECTION
+//		clear_strip(&s);
+		setPixels(&s);
+		sendShow();
 /*
-	VideoCapture vid("nasa.mp4");
+	VideoCapture vid("adventure.mp4");
 	namedWindow( "vid", CV_WINDOW_AUTOSIZE );
 	index = 0;
 	while (1)
@@ -73,9 +84,9 @@ int main (int argc, char *argv[])
 		if(!vidframe.empty())
 		{
 			imshow("vid", vidframe);
-			if (index % 2 == 0)
+			if (index % 1 == 0)
 			{
-				GaussianBlur(vidframe, vidframe, Size(0,0), 7.0);
+				GaussianBlur(vidframe, vidframe, Size(0,0), 5.0);
 				map_image(&vidframe, &s);
 				setPixels(&s);
 				sendShow();
@@ -85,6 +96,7 @@ int main (int argc, char *argv[])
 				circle(res, Point(300*s.img_coords[ii][0],300*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
 			imshow("Result", res);
 			index++;
+			waitms(100);
 		}
 		waitKey(20);
 	}
@@ -93,8 +105,12 @@ int main (int argc, char *argv[])
 	// BEGIN 3D SCANNING
 
 	// initialize scanner, cameras
+	cap1.set(15,-2);
 	scan.numcams = 0;
 	add_camera(&scan, &cap1);
+	// view object 15.8cm long at distance of 32cm
+	// gives 13.87deg for half x-plane
+	// or 27.7 for full x range
 	scan.camfov[0] = 30.0;
 //	add_camera(&scan, &cap2);
 //	scan.camfov[1] = 30.0;

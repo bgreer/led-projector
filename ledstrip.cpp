@@ -53,6 +53,23 @@ void print_img_coords (strip *s)
 	}
 }
 
+void read_led_positions (strip *s, char *fname)
+{
+	FILE *fp;
+	int ii;
+	float x, y;
+
+	fp = fopen(fname, "r");
+
+	while (fscanf(fp, "%d\t%f\f%f\n", &ii, &x, &y) != EOF)
+	{
+		s->img_coords[ii][0] = x*0.5 + 0.5;
+		s->img_coords[ii][1] = (y*0.5 + 0.5);
+	}
+
+	fclose(fp);
+}
+
 void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, float zstep)
 {
 	int ii;
@@ -111,6 +128,7 @@ void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, fl
 	{
 		s->img_coords[ii][0] = (PI + atan2(s->space_coords[ii][1],s->space_coords[ii][0]))/(TWOPI);
 		s->img_coords[ii][1] = s->space_coords[ii][2] / s->space_coords[numpixels-1][2];
+//		printf("%d\t%f\t%f\t%f\t%f\t%f\n", ii, s->space_coords[ii][0], s->space_coords[ii][1], s->space_coords[ii][2], s->img_coords[ii][0], s->img_coords[ii][1]);
 	}
 
 	// method 2: flat plane

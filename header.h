@@ -57,6 +57,7 @@ void interp_pixel (Mat *img, float x, float y, uint8_t *r, uint8_t *g, uint8_t *
 void print_strip (strip *s);
 void print_space_coords (strip *s);
 void print_img_coords (strip *s);
+void read_led_positions (strip *s, char *fname);
 void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, float zstep);
 void clear_strip (strip *s);
 void free_strip (strip *s);
