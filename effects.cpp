@@ -6,16 +6,16 @@
 		random blinking
 X		swipe along strip
 X		pulse
-		fade existing up/down
+X		fade existing up/down
 X		set to uniform color
-		twinkle
+X		twinkle
 
 */
 
 void effect_twinkle (strip *s, float speed, float speed_variance, float duration, int cr, int cg, int cb)
 {
 	struct timespec time0, time1;
-	float x;
+	float x, val;
 	int ii;
 	float phase[s->numpixels];
 	float led_speed[s->numpixels];
@@ -29,7 +29,17 @@ void effect_twinkle (strip *s, float speed, float speed_variance, float duration
 	x = 0.0;
 	while (x <= duration)
 	{
-		
+		clock_gettime(CLOCK_MONOTONIC, &time1);
+		x = (timespec_to_sec(&time1) - timespec_to_sec(&time0));
+		for (ii=0; ii<s->numpixels; ii++)
+		{
+			// compute value for this pixel
+			val = pow(sin(x*led_speed[ii]*PI + phase[ii]),2.0);
+			s->r[ii] = bound(val*cr);
+			s->g[ii] = bound(val*cg);
+			s->b[ii] = bound(val*cb);
+		}
+		setPixels(s);
 	}
 }
 
@@ -63,6 +73,7 @@ void effect_fadeto (strip *s, float time, int cr, int cg, int cb)
 			s->g[ii] = bound(orig_r[ii] + x*(cr-orig_r[ii]));
 			s->b[ii] = bound(orig_r[ii] + x*(cr-orig_r[ii]));
 		}
+		setPixels(s);
 	}
 }
 
