@@ -1,4 +1,5 @@
 #include "header.h"
+#include "parse_params.h"
 #include <time.h>
 
 /*
@@ -15,9 +16,68 @@ int main (int argc, char *argv[])
 //	VideoCapture cap2(1);
 	char buffer[32];
 	int ii, index;
+	// command-line stuff
+	tag t[5];
+	int geom_cyl, geom_sph, geom_cam, geom_file;
+	char portname[128];
+	int retval, port_provided;
+
+	srand(1234);
 
 	// collect some cameras from the command-line?
-	// TODO
+	geom_cam = 0;
+	geom_cyl = 0;
+	geom_sph = 1;
+	geom_file = 0;
+	port_provided = 0;
+	t[0].name = "-cams";
+	t[0].type = TAGTYPE_BOOL;
+	t[0].data = &geom_cam;
+	t[1].name = "-cylinder";
+	t[1].type = TAGTYPE_BOOL;
+	t[1].data = &geom_cyl;
+	t[2].name = "-sphere";
+	t[2].type = TAGTYPE_BOOL;
+	t[2].data = &geom_sph;
+	t[3].name = "-port";
+	t[3].type = TAGTYPE_STRING;
+	t[3].data = portname;
+	t[4].name = "-file"; // read led positions from file
+	t[4].type = TAGTYPE_BOOL;
+	t[4].data = &geom_file;
+
+	retval = parse_params(argc, argv, 5, t);
+
+	// connect to arduino
+	if (strcmp(portname,"")==0)
+	{
+		printf("Incorrect number of command-line arguments.\n Include serial port for Arduino comms.\n");
+		openComm("/dev/null");
+	} else {
+		/* open serial port */
+		openComm(portname);
+	}
+
+	printf("Using geometry: ");
+
+	// create strip geometry
+	if (geom_cyl)
+	{
+		printf("Cylinder\n");
+		init_strip_cylinder(&s, 243, 0.0162, 0.078, 0.0185);
+	}
+	if (geom_sph)
+	{
+		printf("Sphere\n");
+		init_strip_sphere(&s, 243, 0.0162, 0.094, 8.0);
+	}
+	if (geom_file)
+	{
+		printf("From File\n");
+		read_led_positions(&s, "pos01");
+	}
+
+
 
 	// load and display source image
 	source = imread("colorbars.jpeg", CV_LOAD_IMAGE_UNCHANGED );
@@ -27,9 +87,6 @@ int main (int argc, char *argv[])
 	imgc.create(source.cols,source.rows,CV_8UC3);
 	imgc.setTo(0);
 
-	// create strip
-	init_strip_cylinder(&s, 243, 0.0162, 0.078, 0.0185);
-	read_led_positions(&s, "pos01");
 	
 	// make image of led locations on source image
 	for (ii=0; ii<s.numpixels; ii++)
@@ -38,14 +95,6 @@ int main (int argc, char *argv[])
 	imshow("Image Coords", imgc);
 
 	// a bit late, but check command line params */
-	if (argc < 2)
-	{
-		printf("Incorrect number of command-line arguments.\n Include serial port for Arduino comms.\n");
-		openComm("/dev/ttyACM0");
-	} else {
-		/* open serial port */
-		openComm(argv[1]);
-	}
 
 	map_image(&source, &s);
 
@@ -58,16 +107,18 @@ int main (int argc, char *argv[])
 	imshow("Result", res);
 
 
-//	setPixels(&s);
-//	sendShow();
-/*	
+	setPixels(&s);
+	sendShow();
+
+	effect_swipe (&s, 1, 40.0, 2.0, 200,40,10);
+
 	while (1)
 	{
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
 			break;
 	}
 	
-*/
+
 
 	waitms(1500);
 	// BEGIN MOVIE PROJECTION

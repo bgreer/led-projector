@@ -25,6 +25,7 @@ typedef struct
 	float **img_coords; // [pixel] [x,y]
 	// color values for each pixel
 	uint8_t *r, *g, *b; // [pixel]
+	uint8_t *sendbuffer;
 } strip;
 
 typedef struct
@@ -44,6 +45,8 @@ typedef struct
 	Mat foreframe[MAXCAMS];
 } scanner;
 
+
+
 /* function prototypes */
 
 void waitms (long ms);
@@ -61,6 +64,7 @@ void read_led_positions (strip *s, char *fname);
 void init_strip_cylinder (strip *s, int numpixels, float ledspacing, float r, float zstep);
 void clear_strip (strip *s);
 void free_strip (strip *s);
+void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, float turns);
 
 // camera.cpp
 void display_webcam();
@@ -74,3 +78,12 @@ void openComm (char *fname);
 void closeComm ();
 void setPixels(strip *s);
 void sendShow();
+
+// effects.c
+void effect_fadeto (strip *s, float time, int cr, int cg, int cb);
+void effect_solid (strip *s, int cr, int cg, int b);
+void effect_pulse (strip *s, float rate, float iters, int cr1, int cg1, int cb1, int cr2, int cg2, int cb2);
+void effect_swipe (strip *s, int direction, float speed, float width, int cr, int cg, int cb);
+float timespec_to_sec (struct timespec *t);
+uint8_t bound (float val);
+float unit_random ();

@@ -1,12 +1,36 @@
 #include "header.h"
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/select.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
 #include <termios.h>
 #include <errno.h>
 
 int fd;
 struct termios options;
+struct serial_struct kernel_serial_settings;
 
 void openComm (char *fname)
+{
+	int r;
+	fd = open(fname, O_RDWR);
+	if (fd < 0) printf("unable to open port %s\n", fname);
+	if (tcgetattr(fd, &options) < 0) printf("unable to get serial parms\n");
+	cfmakeraw(&options);
+	if (cfsetspeed(&options, 115200) < 0) printf("error in cfsetspeed\n");
+	if (tcsetattr(fd, TCSANOW, &options) < 0) printf("unable to set baud rate\n");
+	r = ioctl(fd, TIOCGSERIAL, &kernel_serial_settings);
+	printf("r = %d\n", r);
+	if (r >= 0)
+	{
+		kernel_serial_settings.flags |= ASYNC_LOW_LATENCY;
+		r = ioctl(fd, TIOCSSERIAL, &kernel_serial_settings);
+		if (r >= 0) printf("set linux low latency mode\n");
+	}
+}
+
+void openComm_old (char *fname)
 {
 
 	fd = open(fname, O_RDWR | O_NOCTTY | O_SYNC);
@@ -44,9 +68,7 @@ void openComm (char *fname)
 void setPixels(strip *s)
 {
 	int ii;
-	uint8_t *buffer, r, g, b;
-
-	buffer = (uint8_t*) malloc( 5 * s->numpixels * sizeof(uint8_t));
+	uint8_t r, g, b;
 
 	for (ii=0; ii<s->numpixels; ii++)
 	{
@@ -56,13 +78,14 @@ void setPixels(strip *s)
 		if (r >= 254) r = 253;
 		if (g >= 254) g = 253;
 		if (b >= 254) b = 253;
-		buffer[ii*5+0] = 0xff;
-		buffer[ii*5+1] = (uint8_t)(ii);
-		buffer[ii*5+2] = (uint8_t)(r);
-		buffer[ii*5+3] = (uint8_t)(g);
-		buffer[ii*5+4] = (uint8_t)(b);
+		s->sendbuffer[ii*5+0] = 0xff;
+		s->sendbuffer[ii*5+1] = ii;
+		s->sendbuffer[ii*5+2] = r;
+		s->sendbuffer[ii*5+3] = g;
+		s->sendbuffer[ii*5+4] = b;
 	}
-	write(fd, buffer, 5*s->numpixels);
+	s->sendbuffer[5*s->numpixels] = 0xfe;
+	write(fd, s->sendbuffer, 5*s->numpixels + 1);
 }
 
 void sendShow()
