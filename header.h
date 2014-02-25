@@ -8,6 +8,11 @@
 #define TWOPI 6.28318530718
 #define DEGTORAD 0.01745329251
 
+#define MAXKEYS 32
+#define MAXHANDLES 32
+#define MAXEFFECTS 128
+#define NUMPIXELS 233
+
 #define MAXCAMS 16
 
 using namespace cv;
@@ -45,10 +50,61 @@ typedef struct
 	Mat foreframe[MAXCAMS];
 } scanner;
 
+// keyframe struct
+typedef struct
+{
+	float time;
+	float value;
+} key;
+
+
+// handle struct
+typedef struct
+{
+	// updated attributes:
+	float fade; // overall multiplier for color
+	float color1[3];
+	float color2[3];
+	float attr[10];
+
+	// keyframes
+	key fade_keys[MAXKEYS];
+	int fade_numkeys;
+	key color1_keys[3][MAXKEYS];
+	int color1_numkeys;
+	key color2_keys[3][MAXKEYS];
+	int color2_numkeys;
+	key attr_keys[10][MAXKEYS];
+	int attr_numkeys[10];
+
+} handle;
+
+// effect struct
+typedef struct effect effect;
+struct effect
+{
+	void (*run)(effect*, handle*, float);// function pointer to effect
+	float starttime;
+	int handleindex;
+	float pixels[3][NUMPIXELS]; // pixel buffer for blending
+};
+
+// function prototypes
+void update_handle (handle *h, float currtime);
+float interp_keys (key *k, int numkeys, float currtime);
+void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h);
+void parse_handle_key (char *line, handle *h, float time);
+void parse_effect (char *line, effect *eff, float time);
+
+void effect_solid (effect *eff, handle *h, float currtime);
+void effect_pulse (effect *eff, handle *h, float currtime);
+
+
 
 
 /* function prototypes */
 
+uint8_t process_pixelval (float val);
 void waitms (long ms);
 static int getLine (char *prmpt, char *buff, size_t sz);
 

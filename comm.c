@@ -21,7 +21,6 @@ void openComm (char *fname)
 	if (cfsetspeed(&options, 115200) < 0) printf("error in cfsetspeed\n");
 	if (tcsetattr(fd, TCSANOW, &options) < 0) printf("unable to set baud rate\n");
 	r = ioctl(fd, TIOCGSERIAL, &kernel_serial_settings);
-	printf("r = %d\n", r);
 	if (r >= 0)
 	{
 		kernel_serial_settings.flags |= ASYNC_LOW_LATENCY;
@@ -67,8 +66,15 @@ void openComm_old (char *fname)
 
 void setPixels(strip *s)
 {
-	int ii;
+	int ii, ebsize;
 	uint8_t r, g, b;
+	uint8_t *extrabuffer;
+	ssize_t ret;
+
+	ebsize = (int)ceil(((float)(5*s->numpixels+1))/1024.)*1024. - (5*s->numpixels+1);
+	extrabuffer = (uint8_t*) malloc(ebsize);
+	memset(extrabuffer, 0x00, ebsize);
+//	printf("padding package by %d bytes\n", ebsize);
 
 	for (ii=0; ii<s->numpixels; ii++)
 	{
@@ -85,14 +91,20 @@ void setPixels(strip *s)
 		s->sendbuffer[ii*5+4] = b;
 	}
 	s->sendbuffer[5*s->numpixels] = 0xfe;
-	write(fd, s->sendbuffer, 5*s->numpixels + 1);
+//	printf("sending %d bytes\n", 5*s->numpixels + 1);
+	ret = write(fd, s->sendbuffer, 5*s->numpixels + 1);
+	ret = write(fd, extrabuffer, ebsize);
+	free(extrabuffer);
+	waitms(200);
+
 }
 
 void sendShow()
 {
+	ssize_t ret;
 	uint8_t buffer[1];
 	buffer[0] = 0xfe;
-	write(fd, buffer, 1);
+	ret = write(fd, buffer, 1);
 }
 
 void closeComm ()

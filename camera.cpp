@@ -29,10 +29,7 @@ void start_scan (scanner *sc, strip *st)
 	float dist, ang;
 	float a1[3], a2[3], n1[3], n2[3], nt[3];
 	float M[2][2], b[2], t[2];
-	float p[3];
-	namedWindow( "back", CV_WINDOW_AUTOSIZE );
-	namedWindow( "fore", CV_WINDOW_AUTOSIZE );
-	namedWindow( "led", CV_WINDOW_AUTOSIZE );
+	float p[3], nn, coef;
 
 	// clear all pixels
 	clear_strip(st);
@@ -88,8 +85,8 @@ void start_scan (scanner *sc, strip *st)
 		Mat temp = sc->foreframe[0] - sc->backframe[0];
 		if (count) circle(temp, Point((xs[0]*0.5+0.5)*temp.cols, (ys[0]*0.5+0.5)*temp.rows), 10, Scalar(255,255,255),2);
 		imshow("cam1", temp);
-		char str[256];
-		sprintf(str, "frame%04d.jpg", led);
+//		char str[256];
+//		sprintf(str, "frame%04d.jpg", led);
 	//	printf("%s\n", str);
 //		imwrite( str, temp );
 	//	while(1) {
@@ -137,7 +134,7 @@ void start_scan (scanner *sc, strip *st)
 			nt[2] = -sin(ang)*n1[0] + cos(ang)*n1[2];
 			// then rotate around z based on cam xpos,ypos
 			ang = atan2(sc->campos[0][1], sc->campos[0][0]);
-			printf("cam 0 is %f rad around z axis\n", ang);
+//			printf("cam 0 is %f rad around z axis\n", ang);
 			n1[0] = cos(ang)*nt[0] + sin(ang)*nt[1];
 			n1[1] = -sin(ang)*nt[0] + cos(ang)*nt[1];
 			n1[2] = nt[2];
@@ -158,7 +155,7 @@ void start_scan (scanner *sc, strip *st)
 			nt[2] = -sin(ang)*n2[0] + cos(ang)*n2[2];
 			// then rotate around z based on cam xpos,ypos
 			ang = atan2(sc->campos[1][1], sc->campos[1][0]);
-			printf("cam 1 is %f rad around z axis\n", ang);
+//			printf("cam 1 is %f rad around z axis\n", ang);
 			n2[0] = cos(ang)*nt[0] + sin(ang)*nt[1];
 			n2[1] = -sin(ang)*nt[0] + cos(ang)*nt[1];
 			n2[2] = nt[2];
@@ -166,25 +163,23 @@ void start_scan (scanner *sc, strip *st)
 
 			// camera positions and led normals have been defined
 			// \vec{t} = M^{-1} \vec{b}
-			b[0] = 0.0; //
-			b[1] = 0.0; //
-			M[0][0] = 1.0;
-			M[0][1] = 0.0; //
-			M[1][0] = M[0][1];
-			M[1][1] = 1.0;
-			// COMPUTE INVERSE
-			// MULTIPLY BY B
+			nn = n1[0]*n2[0] + n1[1]*n2[1] + n1[2]*n2[2];
+			coef = 1.0/(nn*nn - 1.0);
+			t[0] = coef * ((n1[0]-n2[0]*nn)*(a1[0]-a2[0]) + (n1[1]-n2[1]*nn)*(a1[1]-a2[1]) + (n1[2]-n2[2]*nn)*(a1[2]-a2[2]));
+			t[1] = coef * ((n1[0]*nn-n2[0])*(a1[0]-a2[0]) + (n1[1]*nn-n2[1])*(a1[1]-a2[1]) + (n1[2]*nn-n2[2])*(a1[2]-a2[2]));
 			// SOLVE FOR POINT
-			p[0] = 0.0; //
-			p[1] = 0.0; //
-			p[2] = 0.0; //
+			p[0] = 0.5 * (a1[0] + a2[0] + t[0]*n1[0] + t[1]*n2[0]); //
+			p[1] = 0.5 * (a1[1] + a2[1] + t[0]*n1[1] + t[1]*n2[1]); //
+			p[2] = 0.5 * (a1[2] + a2[2] + t[0]*n1[2] + t[1]*n2[2]); //
 			// CHECK POINT
 			// ?
 			// SET STRIP LED COORDS
+			printf("TWOPT\t%f\t%f\t%f\t%f\t%f\n", p[0], p[1], p[2], t[0], t[1]);
 			memcpy(st->space_coords[led], p, 3*sizeof(float));
 		} else {
 //			printf("Not enough cameras found LED %d\n", led);
 			if (count) printf("%d\t%f\t%f\n", led, xs[0], ys[0]);
+			else printf("LED %d not found\n", led);
 		}
 
 	}

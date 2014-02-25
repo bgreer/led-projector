@@ -77,11 +77,11 @@ void effect_fadeto (strip *s, float time, int cr, int cg, int cb)
 	}
 }
 
-void effect_solid (strip *s, int cr, int cg, int b)
+void effect_solid (strip *s, int cr, int cg, int cb)
 {
 	memset(s->r, bound(cr), s->numpixels);
-	memset(s->r, bound(cr), s->numpixels);
-	memset(s->r, bound(cr), s->numpixels);
+	memset(s->g, bound(cg), s->numpixels);
+	memset(s->b, bound(cb), s->numpixels);
 	setPixels(s);
 }
 

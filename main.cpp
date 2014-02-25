@@ -12,14 +12,20 @@ int main (int argc, char *argv[])
 	Mat vidframe;
 	strip s;
 	scanner scan;
-	VideoCapture cap1(1);
-//	VideoCapture cap2(1);
+	VideoCapture cap1(0);
+//	VideoCapture cap2(2);
 	char buffer[32];
-	int ii, index;
+	int ii, ij, index;
+	// for sequencer
+	effect eff[MAXEFFECTS];
+	handle h[MAXHANDLES];
+	int numeffects;
+	float time;
+	float pixels[3][NUMPIXELS];
 	// command-line stuff
-	tag t[5];
+	tag t[6];
 	int geom_cyl, geom_sph, geom_cam, geom_file;
-	char portname[128];
+	char portname[128], fname_seq[128];
 	int retval, port_provided;
 
 	srand(1234);
@@ -45,8 +51,11 @@ int main (int argc, char *argv[])
 	t[4].name = "-file"; // read led positions from file
 	t[4].type = TAGTYPE_BOOL;
 	t[4].data = &geom_file;
+	t[5].name = "-seq"; // sequence file
+	t[5].type = TAGTYPE_STRING;
+	t[5].data = fname_seq;
 
-	retval = parse_params(argc, argv, 5, t);
+	retval = parse_params(argc, argv, 6, t);
 
 	// connect to arduino
 	if (strcmp(portname,"")==0)
@@ -69,7 +78,7 @@ int main (int argc, char *argv[])
 	if (geom_sph)
 	{
 		printf("Sphere\n");
-		init_strip_sphere(&s, 243, 0.0162, 0.094, 8.0);
+		init_strip_sphere(&s, 233, 0.0162, 0.1, 8.0);
 	}
 	if (geom_file)
 	{
@@ -94,8 +103,8 @@ int main (int argc, char *argv[])
 	namedWindow( "Image Coords", CV_WINDOW_AUTOSIZE );
 	imshow("Image Coords", imgc);
 
-	// a bit late, but check command line params */
 
+	// projection
 	map_image(&source, &s);
 
 
@@ -108,23 +117,62 @@ int main (int argc, char *argv[])
 
 
 	setPixels(&s);
-	sendShow();
 
-	effect_swipe (&s, 1, 40.0, 2.0, 200,40,10);
+	//////////////////////////////////////////////////////////////////
+	printf("Starting Sequencer..\n");
+	load_sequence_file(fname_seq, eff, &numeffects, h);
 
-	while (1)
+	time = 0.0;
+	while (time < 120.0)
 	{
+		memset(pixels[0], 0, NUMPIXELS*sizeof(float));
+		memset(pixels[1], 0, NUMPIXELS*sizeof(float));
+		memset(pixels[2], 0, NUMPIXELS*sizeof(float));
+		// look through list of effects
+		for (ii=0; ii<numeffects; ii++)
+		{
+			// is this effect supposed to be running?
+			if (eff[ii].starttime <= time)
+			{
+				// update the handle
+				update_handle(&(h[eff[ii].handleindex]), time);
+				// run effect
+				eff[ii].run(eff+ii, h+eff[ii].handleindex, time);
+				// add to primary pixel buffer
+				for (ij=0; ij<NUMPIXELS; ij++)
+				{
+					pixels[0][ij] += eff[ii].pixels[0][ij];
+					pixels[1][ij] += eff[ii].pixels[1][ij];
+					pixels[2][ij] += eff[ii].pixels[2][ij];
+				}
+			}
+		}
+		// process primary pixel buffer
+		// gamma correction, bounding
+		for (ij=0; ij<NUMPIXELS; ij++)
+		{
+			s.r[ij] = process_pixelval(pixels[0][ij]);
+			s.g[ij] = process_pixelval(pixels[1][ij]);
+			s.b[ij] = process_pixelval(pixels[2][ij]);
+		}
+		// send processed pixel buffer to led driver
+		printf("sending pixels at time=%f, %f\n", time, pixels[0][0]);
+		for (ii=0; ii<s.numpixels; ii++)
+			circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
+		imshow("Result", res);
+
+		setPixels(&s);
+		time += 1.0/24.; // make this real-time?
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
 			break;
 	}
-	
+	//////////////////////////////////////////////////////////////////
 
 
-	waitms(1500);
-	// BEGIN MOVIE PROJECTION
-//		clear_strip(&s);
+		clear_strip(&s);
 		setPixels(&s);
-		sendShow();
+//		sendShow();
+	// BEGIN MOVIE PROJECTION
 /*
 	VideoCapture vid("adventure.mp4");
 	namedWindow( "vid", CV_WINDOW_AUTOSIZE );
@@ -154,7 +202,7 @@ int main (int argc, char *argv[])
 	*/
 
 	// BEGIN 3D SCANNING
-
+/*
 	// initialize scanner, cameras
 	cap1.set(15,-2);
 	scan.numcams = 0;
@@ -162,13 +210,13 @@ int main (int argc, char *argv[])
 	// view object 15.8cm long at distance of 32cm
 	// gives 13.87deg for half x-plane
 	// or 27.7 for full x range
-	scan.camfov[0] = 30.0;
+	scan.camfov[0] = 27.7;
 //	add_camera(&scan, &cap2);
-//	scan.camfov[1] = 30.0;
+//	scan.camfov[1] = 27.7;
 
 	// display camera images live for setup
 	namedWindow( "cam1", CV_WINDOW_AUTOSIZE );
-	namedWindow( "cam2", CV_WINDOW_AUTOSIZE );
+//	namedWindow( "cam2", CV_WINDOW_AUTOSIZE );
 	printf("PRESS SPACE TO BEGIN SCANNING\n");
 	while(1)
 	{
@@ -176,10 +224,10 @@ int main (int argc, char *argv[])
 		circle(scan.backframe[0], Point(scan.backframe[0].cols/2,scan.backframe[0].rows/2), 
 			10, Scalar(255,255,255), 2);
 		imshow("cam1", scan.backframe[0]);
-//		grab_frame(&scan, 1, 0);
-//		circle(scan.backframe[1], Point(scan.backframe[1].cols/2,scan.backframe[1].rows/2), 
-//			10, Scalar(255,255,255), 2);
-//		imshow("cam2", scan.backframe[1]);
+		grab_frame(&scan, 1, 0);
+		circle(scan.backframe[1], Point(scan.backframe[1].cols/2,scan.backframe[1].rows/2), 
+			10, Scalar(255,255,255), 2);
+		imshow("cam2", scan.backframe[1]);
 		// continue after pressing space
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
 			break;
@@ -189,6 +237,7 @@ int main (int argc, char *argv[])
 	printf("(Camera directions are assumed to be towards common origin)\n");
 	for (ii=0; ii<scan.numcams; ii++)
 	{
+		printf("Current Cam: %d of %d\n", ii+1, scan.numcams);
 		memset(buffer,0,32);
 		getLine("CamX>", buffer, 32);
 		scan.campos[ii][0] = atof(buffer);
@@ -202,7 +251,7 @@ int main (int argc, char *argv[])
 
 	start_scan(&scan, &s);
 	// still need to project to image coords
-
+*/
 	waitKey(0);
 
 
@@ -244,4 +293,20 @@ static int getLine (char *prmpt, char *buff, size_t sz) {
 	// Otherwise remove newline and give string back to caller.
 	buff[strlen(buff)-1] = '\0';
 	return 0;
+}
+
+uint8_t process_pixelval (float val)
+{
+	float proc, b, gain;
+
+	// apply gamma correction
+	gain = 255.0;
+	b = 255.0 / (exp(255./gain) - 1.0);
+	proc = b*(exp(val/gain)-1.0);
+
+	// bound
+	if (proc > 255.0) proc = 255.0;
+	if (proc < 0.0) proc = 0.0;
+
+	return (uint8_t) proc;
 }
