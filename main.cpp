@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
 		imshow("Result", res);
 
 		setPixels(&s);
-		time += 1.0/24.; // make this real-time?
+		time += 1.0/28.; // make this real-time?
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
 			break;
 	}

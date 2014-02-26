@@ -95,7 +95,7 @@ void setPixels(strip *s)
 	ret = write(fd, s->sendbuffer, 5*s->numpixels + 1);
 	ret = write(fd, extrabuffer, ebsize);
 	free(extrabuffer);
-	waitms(200);
+	waitms(10);
 
 }
 
