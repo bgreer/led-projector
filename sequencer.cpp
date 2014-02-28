@@ -370,6 +370,12 @@ void parse_effect (char *line, effect *eff, float time)
 	} else if (strcmp(buffer, "flicker") == 0) {
 		printf("effect 6");
 		eff->run = &effect_flicker;
+	} else if (strcmp(buffer, "image") == 0) {
+		printf("effect 7");
+		eff->run = &effect_image;
+	} else if (strcmp(buffer, "slp") == 0) {
+		printf("effect 8");
+		eff->run = &effect_slp;
 	} else {
 		printf("UNKNOWN EFFECT");
 		exit(-1);

@@ -11,7 +11,7 @@
 #define MAXKEYS 32
 #define MAXHANDLES 32
 #define MAXEFFECTS 128
-#define MAXDATA 1024
+#define MAXDATA 5000
 #define NUMPIXELS 232
 #define SPHERERAD 0.0985
 
@@ -111,6 +111,8 @@ void effect_video (effect *eff, handle *h, float currtime);
 void effect_packet (effect *eff, handle *h, float currtime);
 void effect_ring (effect *eff, handle *h, float currtime);
 void effect_flicker (effect *eff, handle *h, float currtime);
+void effect_image (effect *eff, handle *h, float currtime);
+void effect_slp (effect *eff, handle *h, float currtime);
 float unit_random ();
 
 

@@ -132,27 +132,35 @@ int main (int argc, char *argv[])
 	printf("Starting Sequencer..\n");
 	load_sequence_file(fname_seq, eff, &numeffects, h, &s);
 
-	printf("Preloading Videos..\n");
+	printf("Preloading Videos and Images..\n");
 	// go through each effect, see if handle.preload = 1
 	for (ii=0; ii<numeffects; ii++)
 	{
 		if (h[eff[ii].handleindex].preload)
 		{
-			printf("  Preloading for handle %d..\n", eff[ii].handleindex);
-			// hackety hack
-			VideoCapture vid(h[eff[ii].handleindex].file);
-			numframes = vid.get(CV_CAP_PROP_FRAME_COUNT);
-			eff[ii].data[0] = (float)numframes;
-			printf("  Found %d frames in %s\n", numframes, h[eff[ii].handleindex].file);
-			allframes = new Mat[numframes];
-			printf("  Reading..\n");
-			// force sequential read because i dont trust opencv
-			for (ij=0; ij<numframes; ij++)
+			if (eff[ii].run==effect_video)
 			{
-				vid.set(CV_CAP_PROP_POS_FRAMES, ij);
-				vid.read(allframes[ij]);
+				printf("  Preloading video for handle %d..\n", eff[ii].handleindex);
+				// hackety hack
+				VideoCapture vid(h[eff[ii].handleindex].file);
+				numframes = vid.get(CV_CAP_PROP_FRAME_COUNT);
+				eff[ii].data[0] = (float)numframes;
+				printf("  Found %d frames in %s\n", numframes, h[eff[ii].handleindex].file);
+				allframes = new Mat[numframes];
+				printf("  Reading..\n");
+				// force sequential read because i dont trust opencv
+				for (ij=0; ij<numframes; ij++)
+				{
+					vid.set(CV_CAP_PROP_POS_FRAMES, ij);
+					vid.read(allframes[ij]);
+				}
+				eff[ii].ptr = allframes;
+			} else {
+				printf("  Preloading image for handle %d..\n", eff[ii].handleindex);
+				allframes = new Mat[1];
+				allframes[0] = imread(h[eff[ii].handleindex].file, CV_LOAD_IMAGE_UNCHANGED );
+				eff[ii].ptr = allframes;
 			}
-			eff[ii].ptr = allframes;
 		}
 	}
 	printf("Done Preloading.\n");

@@ -1,9 +1,159 @@
 #include "header.h"
 
 
+// single-line packet
+// USES: fade
+// 
+void effect_slp (effect *eff, handle *h, float currtime)
+{
+	
+}
+
+
+// USES: fade
+// attr[0]=theta in deg, gives angle to project at
+// attr[1]=proj, method of projection (0=planar, 1=cylindrical, 2=spherical)
+// str=filename, not keyframed (obviously)
+void effect_image (effect *eff, handle *h, float currtime)
+{
+	int ii;
+	Mat *frames;
+	uint8_t r, g, b;
+	float x, y, thisx, thisy, thisz, theta;
+
+	// sort out frame data
+	frames = (Mat*) eff->ptr;
+
+	theta = h->attr[0]*DEGTORAD;
+	printf("%f\n", theta);
+
+	imshow("Source", frames[0]);
+	for (ii=0; ii<NUMPIXELS; ii++)
+	{
+		r = 0;
+		g = 0;
+		b = 0;
+		thisx = eff->str->space_coords[ii][0];
+		thisy = eff->str->space_coords[ii][1];
+		thisz = eff->str->space_coords[ii][2];
+		// make x and y [0,1]
+		switch ((int)(h->attr[1]))
+		{
+			case 0: // planar
+				x = ((thisx*cos(theta) + thisy*sin(theta)) + SPHERERAD) / (2.*SPHERERAD);
+				y = (thisz + SPHERERAD) / (2.*SPHERERAD);
+				break;
+			case 1: // cylindrical
+				x = fmod(atan2(thisy,thisx) + theta, TWOPI) / TWOPI;
+				y = (thisz + SPHERERAD) / (2.*SPHERERAD);
+				break;
+			case 2: // spherical
+				x = fmod(atan2(thisy,thisx) + theta, TWOPI) / TWOPI;
+				y = (atan2(thisz,sqrt(thisx*thisx+thisy*thisy))+PI) / TWOPI;
+				break;
+		}
+		interp_pixel(&(frames[0]), x, y, &r, &g, &b);
+		eff->pixels[0][ii] = ((float)r) * h->fade;
+		eff->pixels[1][ii] = ((float)g) * h->fade;
+		eff->pixels[2][ii] = ((float)b) * h->fade;
+	}
+
+}
+
+
+// USE: fade
+// color1
+// color2
+// color3
+// attr[0] = rate of fire
+// attr[1] = duration
+// if colorX != 0,0,0 use it
+// use eff->data for persistent storage
+// TODO: use gradual turn-on, add third color option
 void effect_flicker (effect *eff, handle *h, float currtime)
 {
+	int ii, ij, ik, numcolors;
+	float p, gamma, fac;
+	float *cdf, *amp, *type;
 
+	amp = &(eff->data[30]);
+	type = &(eff->data[40+NUMPIXELS]);
+
+	// count colors
+	numcolors = 1;
+	if (h->color2[0] > 0.0 || h->color2[1] > 0.0 || h->color2[2] > 0.0) numcolors++;
+
+	// WORK OUT PROBABILITIES
+	cdf = &(eff->data[3]);
+	if (eff->data[0] == 0.0)
+		eff->data[0] = currtime;
+	
+	// only go if its been a bit of time
+	if (currtime - eff->data[0] > 1./h->attr[0])
+	{
+		gamma = h->attr[0] * (currtime - eff->data[0]);
+		eff->data[0] = currtime; // store current time for next time
+		// only compute new cdf if gamma has changed enough?
+		if (eff->data[2] != gamma)
+		{
+			eff->data[2] = gamma;
+			// create new lookup table
+			for (ii=0; ii<20; ii++)
+			{
+				cdf[ii] = 0.0;
+				for (ij=0; ij<ii; ij++)
+				{
+					// compute factorial of ij
+					fac = 1.0;
+					for (ik=1;ik<=ij; ik++)
+						fac *= (float)ik;
+					cdf[ii] += pow(gamma, ij) / fac;
+				}
+				cdf[ii] *= exp(-gamma);
+			}
+		}
+	
+		// figure out how many to fire off
+		p = unit_random();
+		// find which entry in cdf is next highest
+		ii = 0;
+		while (cdf[ii] < p && ii<19) ii++;
+//		printf("%f %d %f %f %f %f\n", gamma, ii, p, cdf[0], cdf[1], cdf[2]);
+		// need to launch ii pixels
+		for (ij=0; ij<ii; ij++)
+		{
+			// pick a pixel, small chance of overlap?
+			p = unit_random() * NUMPIXELS;
+			amp[(int)floor(p)] = 1.0;
+			type[(int)floor(p)] = floor(unit_random()*numcolors);
+		}
+	}
+
+	// clear pixels first
+	memset(eff->pixels[0], 0, NUMPIXELS * sizeof(float));
+	memset(eff->pixels[1], 0, NUMPIXELS * sizeof(float));
+	memset(eff->pixels[2], 0, NUMPIXELS * sizeof(float));
+
+	for (ii=0; ii<NUMPIXELS; ii++)
+	{
+		if (type[ii] == 0.0)
+		{
+			eff->pixels[0][ii] = h->color1[0] * h->fade * amp[ii];
+			eff->pixels[1][ii] = h->color1[1] * h->fade * amp[ii];
+			eff->pixels[2][ii] = h->color1[2] * h->fade * amp[ii];
+		} else {
+			eff->pixels[0][ii] = h->color2[0] * h->fade * amp[ii];
+			eff->pixels[1][ii] = h->color2[1] * h->fade * amp[ii];
+			eff->pixels[2][ii] = h->color2[2] * h->fade * amp[ii];
+		}
+	}
+
+	// decay amplitudes
+	if (eff->data[1] == 0.0) eff->data[1] = currtime;
+	for (ii=0; ii<NUMPIXELS; ii++)
+		if (amp[ii] > 0.0)
+			amp[ii] -= (currtime - eff->data[1]) / h->attr[1];
+	eff->data[1] = currtime;
 }
 
 
