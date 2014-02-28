@@ -11,7 +11,9 @@
 #define MAXKEYS 32
 #define MAXHANDLES 32
 #define MAXEFFECTS 128
-#define NUMPIXELS 233
+#define MAXDATA 1024
+#define NUMPIXELS 232
+#define SPHERERAD 0.0985
 
 #define MAXCAMS 16
 
@@ -25,6 +27,7 @@ typedef struct
 	// these are initialized by specifying the position
 	// of the strip in 3d space. 
 	float **space_coords; // [pixel] [x,y,z]
+	float *lat, *lon;
 	// the space coords are then projected back on to a
 	// 2d plane, the image plane
 	float **img_coords; // [pixel] [x,y]
@@ -77,6 +80,8 @@ typedef struct
 	key attr_keys[10][MAXKEYS];
 	int attr_numkeys[10];
 
+	char file[128];
+	int preload;
 } handle;
 
 // effect struct
@@ -87,18 +92,26 @@ struct effect
 	float starttime;
 	int handleindex;
 	float pixels[3][NUMPIXELS]; // pixel buffer for blending
+	float data[MAXDATA]; // extra data
+	void *ptr;
+	strip *str;
 };
 
 // function prototypes
 void update_handle (handle *h, float currtime);
 float interp_keys (key *k, int numkeys, float currtime);
-void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h);
+void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h, strip *st);
 void parse_handle_key (char *line, handle *h, float time);
 void parse_effect (char *line, effect *eff, float time);
 
 void effect_solid (effect *eff, handle *h, float currtime);
 void effect_pulse (effect *eff, handle *h, float currtime);
-
+void effect_circle (effect *eff, handle *h, float currtime);
+void effect_video (effect *eff, handle *h, float currtime);
+void effect_packet (effect *eff, handle *h, float currtime);
+void effect_ring (effect *eff, handle *h, float currtime);
+void effect_flicker (effect *eff, handle *h, float currtime);
+float unit_random ();
 
 
 
@@ -135,11 +148,3 @@ void closeComm ();
 void setPixels(strip *s);
 void sendShow();
 
-// effects.c
-void effect_fadeto (strip *s, float time, int cr, int cg, int cb);
-void effect_solid (strip *s, int cr, int cg, int b);
-void effect_pulse (strip *s, float rate, float iters, int cr1, int cg1, int cb1, int cr2, int cg2, int cb2);
-void effect_swipe (strip *s, int direction, float speed, float width, int cr, int cg, int cb);
-float timespec_to_sec (struct timespec *t);
-uint8_t bound (float val);
-float unit_random ();

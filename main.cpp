@@ -10,12 +10,13 @@ int main (int argc, char *argv[])
 {
 	Mat imgc, source, res, f1, f2, sub, sub_g;
 	Mat vidframe;
+	Mat *allframes;
 	strip s;
 	scanner scan;
 	VideoCapture cap1(0);
 //	VideoCapture cap2(2);
 	char buffer[32];
-	int ii, ij, index;
+	int ii, ij, index, numframes;
 	// for sequencer
 	effect eff[MAXEFFECTS];
 	handle h[MAXHANDLES];
@@ -78,7 +79,7 @@ int main (int argc, char *argv[])
 	if (geom_sph)
 	{
 		printf("Sphere\n");
-		init_strip_sphere(&s, 233, 0.0162, 0.1, 8.0);
+		init_strip_sphere(&s, 232, 0.0162, SPHERERAD, 8.0);
 	}
 	if (geom_file)
 	{
@@ -111,16 +112,50 @@ int main (int argc, char *argv[])
 	res.create(source.cols,source.rows,CV_8UC3);
 	res.setTo(0);
 	for (ii=0; ii<s.numpixels; ii++)
-		circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
+		if (s.space_coords[ii][1] >= 0.0)
+			circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
 	namedWindow( "Result", CV_WINDOW_AUTOSIZE );
 	imshow("Result", res);
 
 
 	setPixels(&s);
 
+	while (1)
+	{
+			if (char(cvWaitKey(1)) == 32) // 27 is esc
+			break;
+
+	}
+
 	//////////////////////////////////////////////////////////////////
+	
 	printf("Starting Sequencer..\n");
-	load_sequence_file(fname_seq, eff, &numeffects, h);
+	load_sequence_file(fname_seq, eff, &numeffects, h, &s);
+
+	printf("Preloading Videos..\n");
+	// go through each effect, see if handle.preload = 1
+	for (ii=0; ii<numeffects; ii++)
+	{
+		if (h[eff[ii].handleindex].preload)
+		{
+			printf("  Preloading for handle %d..\n", eff[ii].handleindex);
+			// hackety hack
+			VideoCapture vid(h[eff[ii].handleindex].file);
+			numframes = vid.get(CV_CAP_PROP_FRAME_COUNT);
+			eff[ii].data[0] = (float)numframes;
+			printf("  Found %d frames in %s\n", numframes, h[eff[ii].handleindex].file);
+			allframes = new Mat[numframes];
+			printf("  Reading..\n");
+			// force sequential read because i dont trust opencv
+			for (ij=0; ij<numframes; ij++)
+			{
+				vid.set(CV_CAP_PROP_POS_FRAMES, ij);
+				vid.read(allframes[ij]);
+			}
+			eff[ii].ptr = allframes;
+		}
+	}
+	printf("Done Preloading.\n");
 
 	time = 0.0;
 	while (time < 120.0)
@@ -156,21 +191,25 @@ int main (int argc, char *argv[])
 			s.b[ij] = process_pixelval(pixels[2][ij]);
 		}
 		// send processed pixel buffer to led driver
-		printf("sending pixels at time=%f, %f\n", time, pixels[0][0]);
+		printf("sending pixels at time=%f\n", time);
+//		res.setTo(0);
 		for (ii=0; ii<s.numpixels; ii++)
+		{
+			circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(0,0,0), -1);
 			circle(res, Point(source.rows*s.img_coords[ii][0],source.cols*s.img_coords[ii][1]), 3, Scalar(s.b[ii],s.g[ii],s.r[ii]), -1);
+		}
 		imshow("Result", res);
+
 
 		setPixels(&s);
 		time += 1.0/28.; // make this real-time?
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
 			break;
 	}
+	
 	//////////////////////////////////////////////////////////////////
 
 
-		clear_strip(&s);
-		setPixels(&s);
 //		sendShow();
 	// BEGIN MOVIE PROJECTION
 /*

@@ -50,7 +50,7 @@ float interp_keys (key *k, int numkeys, float currtime)
 // create list of handles, add keyframes to them
 // assume eff is allocated, return number of effects loaded
 // assume h is allocated, return number of handles loaded
-void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h)
+void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h, strip *st)
 {
 	FILE *fp;
 	ssize_t readnum;
@@ -79,6 +79,8 @@ void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h)
 		h[ii].fade_numkeys = 0;
 		h[ii].color1_numkeys = 0;
 		h[ii].color2_numkeys = 0;
+		memset(h[ii].file, 0, 128);
+		h[ii].preload = 0;
 	}
 	// initialize each effect
 	for (ii=0; ii<MAXEFFECTS; ii++)
@@ -91,6 +93,10 @@ void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h)
 			eff[ii].pixels[0][ij] = 0.0;
 			eff[ii].pixels[1][ij] = 0.0;
 			eff[ii].pixels[2][ij] = 0.0;
+		}
+		for (ij=0; ij<MAXDATA; ij++)
+		{
+			eff[ii].data[ij] = 0.0;
 		}
 	}
 
@@ -154,9 +160,12 @@ void load_sequence_file (char *fname, effect *eff, int *numeffects, handle *h)
 			// (4/5) use helper function to parse the rest
 			printf("parsing effect %d\n", curreffect);
 			parse_effect(line+ii, eff+curreffect, currtime);
+			// load extra data into every effect
+			eff[curreffect].str = st;
 			curreffect++;
 		} else {
 			printf("WARNING: sequence not recognized!\n");
+			exit(-1);
 		}
 	}
 	if (line) free(line);
@@ -287,9 +296,27 @@ void parse_handle_key (char *line, handle *h, float time)
 		val = atof(line+ii);
 		printf(" with value %f", val);
 		h->attr_keys[attrindex][h->attr_numkeys[attrindex]].value = val;
+		printf(" [test %d %f] ", h->attr_numkeys[attrindex], h->attr_keys[attrindex][h->attr_numkeys[attrindex]].value);
+		h->attr_keys[attrindex][h->attr_numkeys[attrindex]].time = time;
 		h->attr_numkeys[attrindex]++;
+	} else if (strcmp(buffer, "file") == 0) {
+		printf("key 4");
+		ii++;
+		index = 0;
+		memset(buffer, 0, 128);
+		while (line[ii] != ' ' && line[ii] != '\n' && line[ii] != '\r')
+		{
+			buffer[index] = line[ii];
+			ii++;
+			index++;
+		}
+		strcpy(h->file, buffer);
+
+		printf(" with value '%s'", h->file);
+		h->preload = 1;
 	} else {
 		printf("UNKNOWN KEY");
+		exit(-1);
 	}
 
 	printf(" at time %f\n" , time);
@@ -328,8 +355,24 @@ void parse_effect (char *line, effect *eff, float time)
 	} else if (strcmp(buffer, "pulse") == 0) {
 		printf("effect 1");
 		eff->run = &effect_pulse;
+	} else if (strcmp(buffer, "circle") == 0) {
+		printf("effect 2");
+		eff->run = &effect_circle;
+	} else if (strcmp(buffer, "video") == 0) {
+		printf("effect 3");
+		eff->run = &effect_video;
+	} else if (strcmp(buffer, "packet") == 0) {
+		printf("effect 4");
+		eff->run = &effect_packet;
+	} else if (strcmp(buffer, "ring") == 0) {
+		printf("effect 5");
+		eff->run = &effect_ring;
+	} else if (strcmp(buffer, "flicker") == 0) {
+		printf("effect 6");
+		eff->run = &effect_flicker;
 	} else {
 		printf("UNKNOWN EFFECT");
+		exit(-1);
 	}
 	
 	// parse handle number

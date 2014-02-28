@@ -78,9 +78,9 @@ void setPixels(strip *s)
 
 	for (ii=0; ii<s->numpixels; ii++)
 	{
-		r = s->r[ii] / 3;
-		g = s->g[ii] / 3;
-		b = s->b[ii] / 3;
+		r = s->r[ii] / 2;
+		g = s->g[ii] / 2;
+		b = s->b[ii] / 2;
 		if (r >= 254) r = 253;
 		if (g >= 254) g = 253;
 		if (b >= 254) b = 253;

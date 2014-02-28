@@ -177,7 +177,7 @@ void free_strip (strip *s)
 
 void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, float turns)
 {
-	int ii, notplaced;
+	int ii, notplaced, skip;
 	float x, y, z, l, r1;
 	float oldx, oldy, oldz;
 
@@ -194,14 +194,19 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 	s->b = (uint8_t*) malloc(numpixels * sizeof(uint8_t));
 	s->sendbuffer = (uint8_t*) malloc( (5 * numpixels + 1) * sizeof(uint8_t));
 
+	skip = 0;
+
 	notplaced = 0;
 	// place first LED
 	x = 0.0;
 	y = 0.0;
 	z = r;
-	s->space_coords[0][0] = x;
-	s->space_coords[0][1] = y;
-	s->space_coords[0][2] = z;
+	if (!skip)
+	{
+		s->space_coords[0][0] = x;
+		s->space_coords[0][1] = y;
+		s->space_coords[0][2] = z;
+	}
 	oldx = x;
 	oldy = y;
 	oldz = z;
@@ -214,9 +219,9 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 		z -= 0.0001;
 		if (z < -r)
 		{
-			s->space_coords[ii][0] = 0.0;
-			s->space_coords[ii][1] = 0.0;
-			s->space_coords[ii][2] = -r;
+			s->space_coords[ii-skip][0] = 0.0;
+			s->space_coords[ii-skip][1] = 0.0;
+			s->space_coords[ii-skip][2] = -r;
 			notplaced++;
 			ii++;
 		} else {
@@ -231,9 +236,12 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 			if (l >= ledspacing)
 			{
 				l = 0.0;
-				s->space_coords[ii][0] = x;
-				s->space_coords[ii][1] = y;
-				s->space_coords[ii][2] = z;
+				if (ii-skip >= 0)
+				{
+					s->space_coords[ii-skip][0] = x;
+					s->space_coords[ii-skip][1] = y;
+					s->space_coords[ii-skip][2] = z;
+				}
 				ii++;
 			}
 		}
@@ -241,6 +249,12 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 
 	if (notplaced)
 		printf("WARNING: %d out of %d LEDs not placed on sphere\n", notplaced, numpixels);
+
+	// calculate lat/lon for each pixel
+	for (ii=0; ii<numpixels; ii++)
+	{
+		
+	}
 
 	// project back to image plane [0,1],[0,1]
 	// method 1: wrap
