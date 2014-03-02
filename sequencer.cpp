@@ -376,6 +376,9 @@ void parse_effect (char *line, effect *eff, float time)
 	} else if (strcmp(buffer, "slp") == 0) {
 		printf("effect 8");
 		eff->run = &effect_slp;
+	} else if (strcmp(buffer, "march") == 0) {
+		printf("effect 9");
+		eff->run = &effect_march;
 	} else {
 		printf("UNKNOWN EFFECT");
 		exit(-1);

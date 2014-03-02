@@ -66,7 +66,7 @@ void openComm_old (char *fname)
 
 void setPixels(strip *s)
 {
-	int ii, ebsize;
+	int ii, ebsize, rev;
 	uint8_t r, g, b;
 	uint8_t *extrabuffer;
 	ssize_t ret;
@@ -76,19 +76,20 @@ void setPixels(strip *s)
 	memset(extrabuffer, 0x00, ebsize);
 //	printf("padding package by %d bytes\n", ebsize);
 
-	for (ii=0; ii<s->numpixels; ii++)
+	for (rev=0; rev<s->numpixels; rev++)
 	{
+		ii = NUMPIXELS-rev-1;
 		r = s->r[ii] / 2;
 		g = s->g[ii] / 2;
 		b = s->b[ii] / 2;
 		if (r >= 254) r = 253;
 		if (g >= 254) g = 253;
 		if (b >= 254) b = 253;
-		s->sendbuffer[ii*5+0] = 0xff;
-		s->sendbuffer[ii*5+1] = ii;
-		s->sendbuffer[ii*5+2] = r;
-		s->sendbuffer[ii*5+3] = g;
-		s->sendbuffer[ii*5+4] = b;
+		s->sendbuffer[rev*5+0] = 0xff;
+		s->sendbuffer[rev*5+1] = rev;
+		s->sendbuffer[rev*5+2] = r;
+		s->sendbuffer[rev*5+3] = g;
+		s->sendbuffer[rev*5+4] = b;
 	}
 	s->sendbuffer[5*s->numpixels] = 0xfe;
 //	printf("sending %d bytes\n", 5*s->numpixels + 1);

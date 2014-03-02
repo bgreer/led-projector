@@ -179,7 +179,7 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 {
 	int ii, notplaced, skip;
 	float x, y, z, l, r1;
-	float oldx, oldy, oldz;
+	float oldx, oldy, oldz, currangle;
 
 	s->numpixels = numpixels;
 	// allocate memory
@@ -193,6 +193,10 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 	s->g = (uint8_t*) malloc(numpixels * sizeof(uint8_t));
 	s->b = (uint8_t*) malloc(numpixels * sizeof(uint8_t));
 	s->sendbuffer = (uint8_t*) malloc( (5 * numpixels + 1) * sizeof(uint8_t));
+	s->angle = (float*) malloc(numpixels * sizeof(float));
+
+	memset(s->angle, 0, numpixels * sizeof(float));
+	currangle = 0.0;
 
 	skip = 0;
 
@@ -206,6 +210,7 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 		s->space_coords[0][0] = x;
 		s->space_coords[0][1] = y;
 		s->space_coords[0][2] = z;
+		s->angle[0] = 0;
 	}
 	oldx = x;
 	oldy = y;
@@ -222,12 +227,14 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 			s->space_coords[ii-skip][0] = 0.0;
 			s->space_coords[ii-skip][1] = 0.0;
 			s->space_coords[ii-skip][2] = -r;
+			s->angle[ii] = currangle;
 			notplaced++;
 			ii++;
 		} else {
 			r1 = sqrt(r*r - z*z);
 			x = r1*cos(z*TWOPI*turns/(2.*r));
 			y = -r1*sin(z*TWOPI*turns/(2.*r));
+			currangle = (z+r)*TWOPI*turns/(2.*r);
 			l += sqrt((x-oldx)*(x-oldx) + (y-oldy)*(y-oldy) + (z-oldz)*(z-oldz));
 			oldx = x;
 			oldy = y;
@@ -241,6 +248,7 @@ void init_strip_sphere (strip *s, int numpixels, float ledspacing, float r, floa
 					s->space_coords[ii-skip][0] = x;
 					s->space_coords[ii-skip][1] = y;
 					s->space_coords[ii-skip][2] = z;
+					s->angle[ii-skip] = currangle;
 				}
 				ii++;
 			}

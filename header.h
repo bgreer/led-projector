@@ -27,6 +27,7 @@ typedef struct
 	// these are initialized by specifying the position
 	// of the strip in 3d space. 
 	float **space_coords; // [pixel] [x,y,z]
+	float *angle; // total angle around
 	float *lat, *lon;
 	// the space coords are then projected back on to a
 	// 2d plane, the image plane
@@ -113,6 +114,7 @@ void effect_ring (effect *eff, handle *h, float currtime);
 void effect_flicker (effect *eff, handle *h, float currtime);
 void effect_image (effect *eff, handle *h, float currtime);
 void effect_slp (effect *eff, handle *h, float currtime);
+void effect_march (effect *eff, handle *h, float currtime);
 float unit_random ();
 
 

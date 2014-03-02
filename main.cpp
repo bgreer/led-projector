@@ -156,7 +156,7 @@ int main (int argc, char *argv[])
 				}
 				eff[ii].ptr = allframes;
 			} else {
-				printf("  Preloading image for handle %d..\n", eff[ii].handleindex);
+				printf("  Preloading image for handle %d.. (%s)\n", eff[ii].handleindex, h[eff[ii].handleindex].file);
 				allframes = new Mat[1];
 				allframes[0] = imread(h[eff[ii].handleindex].file, CV_LOAD_IMAGE_UNCHANGED );
 				eff[ii].ptr = allframes;
