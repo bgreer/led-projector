@@ -155,7 +155,7 @@ int main (int argc, char *argv[])
 				{
 					vid.set(CV_CAP_PROP_POS_FRAMES, ij);
 					vid.read(allframes[ij]);
-					GaussianBlur(allframes[ij], allframes[ij], Size(0,0), 2.0);
+	//				GaussianBlur(allframes[ij], allframes[ij], Size(0,0), 2.0);
 				}
 				eff[ii].ptr = allframes;
 			} else {
@@ -211,7 +211,7 @@ int main (int argc, char *argv[])
 			s.b[ij] = process_pixelval(pixels[2][ij]);
 		}
 		// send processed pixel buffer to led driver
-		printf("sending pixels at time=%f\n", currtime);
+		printf("sending pixels at time = %d:%05.2f\n", (int)floor(currtime/60.), fmod(currtime,60.));
 //		res.setTo(0);
 		for (ii=0; ii<s.numpixels; ii++)
 		{
