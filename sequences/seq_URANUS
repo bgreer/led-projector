@@ -1,0 +1,290 @@
+# URANUS run time ???
+0:00 h1 fade 0.0
+0:00 h1 file movies/Uranus/Uranus01_Stretch_sm.mp4
+0:00 h1 attr 0 30
+0:00 h1 attr 1 0
+0:00 h1 attr 2 2
+0:00 effect video 1
+0:03 h1 fade 1.0
+0:17 h1 fade 1.0
+# fade to solid light blue
+0:17 h2 fade 0.0
+0:17 h2 color1 170 210 255
+0:17 effect solid 2
+0:18 h1 fade 0.0
+0:18 h2 fade 0.4
+0:20 h2 fade 0.2
+# start next video
+0:20 h3 fade 1.0
+0:20 h3 file movies/Uranus/Uranus02b_Stretch_sm.mp4
+0:20 h3 attr 0 30
+0:20 h3 attr 1 0
+0:20 h3 attr 2 2
+0:20 effect video 3
+0:21 h2 fade 0.0
+# next movie
+0:58 h4 fade 1.0
+0:58 h4 file movies/Uranus/Uranus03_Reflect_sm.mp4
+0:58 h4 attr 0 30
+0:58 h4 attr 1 0
+0:58 h4 attr 2 0
+0:58 effect video 4
+# movie 3
+1:06 h5 fade 1.0
+1:06 h5 file movies/Uranus/Uranus04_Stretch_sm.mp4
+1:06 h5 attr 0 30
+1:06 h5 attr 1 0
+1:06 h5 attr 2 2
+1:06 effect video 5
+# add a solid
+1:23 h33 fade 0.0
+1:23 h33 color1 230 180 255
+1:23 effect solid 33
+1:24 h33 fade 1.0
+# marching
+1:26 h6 fade 0.0
+1:26 h6 color1 170 210 255
+1:26 h6 color2 170 210 255
+1:26 h6 attr 0 1
+1:26 h6 attr 1 0.5
+1:26 h6 attr 2 0.8
+1:26 h6 attr 3 0
+1:26 h6 attr 4 0.2
+1:26 effect march 6
+1:27 h33 fade 0.0
+1:28 h6 fade 1.0
+1:34 h6 fade 1.0
+1:35 h6 fade 0.0
+# video
+1:35 h7 fade 1.0
+1:35 h7 file movies/Uranus/Uranus05_Stretch_sm.mp4
+1:35 h7 attr 0 30
+1:35 h7 attr 1 0
+1:35 h7 attr 2 2
+1:35 effect video 7
+# solid
+1:49 h8 fade 0.0
+1:49 h8 color1 170 210 255
+1:49 effect solid 8
+1:50 h8 fade 1.0
+1:58 h8 fade 0.8
+# fade in a flicker
+1:58 h9 fade 0.0
+1:58 h9 color1 170 210 255
+1:58 h9 color2 160 200 255
+1:58 h9 attr 0 150
+1:58 h9 attr 1 2.0
+1:58 h9 attr 2 0.4
+1:58 effect flicker 9
+2:00 h8 fade 0.0
+2:00 h9 fade 1.0
+2:10 h9 attr 0 150
+2:10 h9 attr 1 2.0
+2:10 h9 attr 2 0.4
+2:20 h9 attr 0 250
+2:20 h9 attr 1 1.5
+2:20 h9 attr 2 0.2
+2:20 h9 fade 1.0
+# pulses
+2:20 h10 fade 0.0
+2:20 h10 color1 170 210 255
+2:20 h10 color1 70 100 130
+2:20 h10 attr 0 1.0
+2:20 effect pulse 10
+2:21 h9 fade 0.0
+2:21 h10 fade 1.0
+2:28 h10 fade 1.0
+# SLP
+2:30 h11 fade 1.0
+2:30 h11 color1 100 120 180
+2:30 h11 attr 0 90
+2:30 h11 attr 1 3
+2:30 h11 attr 2 3
+2:30 h11 attr 3 -10
+2:30 h11 attr 4 3
+2:30 effect slp 11
+2:31 h10 fade 0.0
+2:33 h12 fade 1.0
+2:33 h12 color1 100 120 180
+2:33 h12 attr 0 90
+2:33 h12 attr 1 3
+2:33 h12 attr 2 3
+2:33 h12 attr 3 -10
+2:33 h12 attr 4 5
+2:33 effect slp 12
+2:36 h13 fade 1.0
+2:36 h13 color1 100 120 180
+2:36 h13 attr 0 90
+2:36 h13 attr 1 3
+2:36 h13 attr 2 3
+2:36 h13 attr 3 -10
+2:36 h13 attr 4 4
+2:36 effect slp 13
+2:39 h14 fade 1.0
+2:39 h14 color1 100 120 180
+2:39 h14 attr 0 90
+2:39 h14 attr 1 3
+2:39 h14 attr 2 3
+2:39 h14 attr 3 -10
+2:39 h14 attr 4 6
+2:39 effect slp 14
+2:42 h15 fade 1.0
+2:42 h15 color1 100 120 180
+2:42 h15 attr 0 90
+2:42 h15 attr 1 3
+2:42 h15 attr 2 3
+2:42 h15 attr 3 -10
+2:42 h15 attr 4 3
+2:42 effect slp 15
+# sunny
+2:44 h16 fade 1.0
+2:44 h16 color1 254 231 73
+2:44 h16 attr 0 90
+2:44 h16 attr 1 3
+2:44 h16 attr 2 3
+2:44 h16 attr 3 -10
+2:44 h16 attr 4 7
+2:44 effect slp 16
+2:47 h17 fade 1.0
+2:47 h17 color1 254 231 73
+2:47 h17 attr 0 90
+2:47 h17 attr 1 3
+2:47 h17 attr 2 3
+2:47 h17 attr 3 -10
+2:47 h17 attr 4 3
+2:47 effect slp 17
+# butter yellow glow
+2:48 h18 fade 0.0
+2:48 h18 color1 254 231 73
+2:48 effect solid 18
+2:49.5 h18 fade 1.0
+2:50 h18 fade 0.0
+# spirals
+2:50 h19 fade 1.0
+2:50 h19 color1 100 120 180
+2:50 h19 attr 0 100
+2:50 h19 attr 1 60
+2:50 h19 attr 2 -50
+2:50 h19 attr 3 340
+2:50 effect packet 19
+2:55 h20 fade 1.0
+2:55 h20 color1 254 231 73
+2:55 h20 attr 0 100
+2:55 h20 attr 1 40
+2:55 h20 attr 2 -50
+2:55 h20 attr 3 340
+2:55 effect packet 20
+# blue embers, flicker
+3:00 h21 fade 0.1
+3:00 h21 color1 100 120 180
+3:00 h21 attr 0 150
+3:00 h21 attr 1 3.0
+3:00 h21 attr 2 0.4
+3:00 effect flicker 21
+3:02 h21 fade 1.0
+3:08 h21 fade 1.0
+# spiral down
+3:08 h22 fade 1.0
+3:08 h22 color1 100 120 180
+3:08 h22 attr 0 100
+3:08 h22 attr 1 60
+3:08 h22 attr 2 -150
+3:08 h22 attr 3 340
+3:08 effect packet 22
+3:08.5 h21 fade 0.0
+3:09 h21 fade 0.0
+3:10 h21 fade 1.0
+3:22 h21 fade 1.0
+# video
+3:22 h23 fade 1.0
+3:22 h23 file movies/Uranus/Uranus06_Reflect_sm.mp4
+3:22 h23 attr 0 30
+3:22 h23 attr 1 0
+3:22 h23 attr 2 0
+3:22 effect video 23
+3:23 h21 fade 0.0
+# march
+3:30 h25 fade 0.0
+3:30 h25 color1 100 120 180
+3:30 h25 color2 100 120 180
+3:30 h25 attr 0 1
+3:30 h25 attr 1 1.0
+3:30 h25 attr 2 0.6
+3:30 h25 attr 3 0
+3:30 h25 attr 4 0.3
+3:30 effect march 25
+# and a movie
+3:30 h26 fade 0.5
+3:30 h26 file movies/Uranus/Uranus08_Stretch_sm.mp4
+3:30 h26 attr 0 30
+3:30 h26 attr 1 0
+3:30 h26 attr 2 2
+3:30 effect video 26
+3:41 h21 fade 0.0
+3:42 h25 fade 0.5
+4:11 h25 fade 0.5
+4:12 h25 fade 0.0
+# solid
+4:12 h26 fade 0.0
+4:12 h26 color1 100 120 180
+4:12 effect solid 26
+4:13 h26 fade 1.0
+4:17 h26 fade 1.0
+# embers
+4:17 h21 fade 0.0
+4:18 h26 fade 0.0
+4:18 h21 fade 0.3
+# add video
+4:41 h27 fade 1.0
+4:41 h27 file movies/Uranus/Uranus09_Stretch_sm.mp4
+4:41 h27 attr 0 30
+4:41 h27 attr 1 0
+4:41 h27 attr 2 2
+4:41 effect video 27
+4:50 h21 fade 0.3
+4:57 h21 fade 0.0
+# video
+4:57 h28 fade 1.0
+4:57 h28 file movies/Uranus/Uranus02b_Stretch_sm.mp4
+4:57 h28 attr 0 30
+4:57 h28 attr 1 0
+4:57 h28 attr 2 2
+4:57 effect video 28
+5:03 h28 fade 1.0
+# video
+5:03 h29 fade 1.0
+5:03 h29 file movies/Uranus/Uranus10_Stretch_sm.mp4
+5:03 h29 attr 0 30
+5:03 h29 attr 1 0
+5:03 h29 attr 2 2
+5:03 effects video 29
+5:04 h28 fade 0.0
+# marching
+5:05 h25 fade 0.0
+5:06 h25 fade 1.0
+5:15 h25 fade 1.0
+# start video for fading
+5:15 h30 fade 1.0
+5:15 h30 file movies/Uranus/Uranus11_Stretch_sm.mp4
+5:15 h30 attr 0 30
+5:15 h30 attr 1 0
+5:15 h30 attr 2 2
+5:15 effect video 30
+5:16 h25 fade 0.0
+5:20 h30 fade 1.0
+5:21 h30 fade 0.0
+5:22 h30 fade 1.0
+5:27 h30 fade 1.0
+5:28 h30 fade 0.0
+5:29 h30 fade 1.0
+5:34 h30 fade 1.0
+5:35 h30 fade 0.0
+5:36 h30 fade 1.0
+5:41 h30 fade 1.0
+5:42 h30 fade 0.0
+5:43 h30 fade 1.0
+# low embers
+5:45 h21 fade 0.0
+5:46 h21 fade 0.3
+5:50 h30 fade 0.0
+6:06 h21 fade 0.0

@@ -1,0 +1,192 @@
+# NEPTUNE runtime=7:53
+# start with video and flicker
+0:00 h1 fade 0.0
+0:00 h1 file movies/Neptune/Neptune01_Stretch_sm.mov
+0:00 h1 attr 0 30
+0:00 h1 attr 1 0
+0:00 h1 attr 2 1
+0:00 effect video 1
+# add flicker on top
+0:00 h2 fade 0.0
+0:00 h2 color1 10 40 200
+0:00 h2 color2 0 0 255
+0:00 h2 attr 0 100
+0:00 h2 attr 1 5.0
+0:00 h2 attr 2 0.4
+0:00 effect flicker 2
+# ramp up
+0:03 h1 fade 0.7
+0:03 h2 fade 0.5
+# freeze flicker
+0:10 h2 attr 1 5.0
+0:14 h2 attr 1 10.0
+0:14 h2 fade 0.5
+# cross fade to new solid
+0:14 h3 fade 0.0
+0:14 h3 color1 10 40 200
+0:14 effect solid 3
+0:15 h2 fade 0.0
+0:15 h3 fade 0.5
+# fade solid back out
+0:32 h3 fade 0.5
+0:33 h3 fade 0.0
+# image + pulse
+1:03 h4 fade 0.0
+1:03 h4 file movies/Neptune/NeptuneStill.jpg
+1:03 h4 attr 0 0
+1:03 h4 attr 1 2
+1:03 effect image 4
+1:03 h5 fade 0.0
+1:03 h5 color1 10 40 200
+1:03 h5 color2 0 0 0
+1:03 h5 attr 0 0.33
+1:03 effect pulse 5
+# fade in
+1:04 h4 fade 0.7
+1:04 h5 fade 0.3
+# fade out
+1:46 h4 fade 0.7
+1:46 h5 fade 0.3
+# video
+1:46 h6 fade 1.0
+1:46 h6 file movies/Neptune/Neptune02_Reflect_sm.mp4
+1:46 h6 attr 0 30
+1:46 h6 attr 1 0
+1:46 h6 attr 2 0
+1:46 effect video 6
+1:47 h4 fade 0.0
+1:47 h5 fade 0.0
+# another video
+1:59 h7 fade 1.0
+1:59 h7 file movies/Neptune/Neptune03_Reflect_sm.mp4
+1:59 h7 attr 0 30
+1:59 h7 attr 1 0
+1:59 h7 attr 2 0
+1:59 effect video 7
+# add flicker, like sun on ice
+1:59 h8 fade 0.0
+1:59 h8 color1 100 140 200
+1:59 h8 color2 100 100 255
+1:59 h8 attr 0 200
+1:59 h8 attr 1 2.0
+1:59 h8 attr 2 0.3
+1:59 effect flicker 8
+# fade in
+2:01 h8 fade 0.5
+# fade in more
+2:08 h8 fade 1.0
+2:26 h8 fade 1.0
+2:28 h8 color1 100 140 200
+2:28 h8 color2 100 100 255
+2:28 h8 attr 0 200
+2:28 h8 attr 1 2.0
+2:29 h8 fade 0.2
+2:29 h8 color1 255 255 255
+2:29 h8 color2 255 240 200
+2:29 h8 attr 0 300
+2:29 h8 attr 1 1.5
+# stay constant for a while
+2:48 h8 fade 1.0
+# pulse fade
+2:50 h8 fade 0.5
+2:52 h8 fade 1.0
+2:54 h8 fade 0.5
+2:56 h8 fade 1.0
+2:58 h8 fade 0.5
+3:00 h8 fade 1.0
+3:02 h8 fade 0.5
+3:04 h8 fade 1.0
+3:06 h8 fade 0.5
+3:10 h8 fade 1.0
+# calm it down a bit
+3:10 h8 attr 0 300
+3:10 h8 attr 1 1.5
+3:10 h8 attr 2 0.3
+3:12 h8 attr 0 200
+3:12 h8 attr 1 3.0
+3:12 h8 attr 2 0.5
+# slow fade
+3:36 h8 fade 1.0
+3:36 h8 attr 1 3.0
+3:50 h8 fade 0.0
+3:50 h8 attr 1 10.0
+# slps
+3:50 h9 fade 1.0
+3:50 h9 color1 20 40 255
+3:50 h9 attr 0 90
+3:50 h9 attr 1 3
+3:50 h9 attr 2 2
+3:50 h9 attr 3 20
+3:50 h9 attr 4 1
+3:50 effect slp 9
+3:51.9 h9 attr 4 1
+3:52 h9 attr 4 4
+3:52 effect slp 9
+3:53.9 h9 attr 4 4
+3:54 h9 attr 4 3
+3:54 effect slp 9
+3:55.9 h9 attr 4 3
+3:56 h9 attr 4 5
+3:56 effect slp 9
+3:57.9 h9 attr 4 5
+3:58 h9 attr 4 2
+3:58 effect slp 9
+# video
+4:00 h10 fade 1.0
+4:00 h10 file movies/Neptune/Neptune04b_Reflect_sm.mp4
+4:00 h10 attr 0 30
+4:00 h10 attr 1 0
+4:00 h10 attr 2 0
+4:00 effect video 10
+# let this roll
+6:07 h10 fade 1.0
+# slps
+6:07 h11 fade 1.0
+6:07 h11 color1 50 90 255
+6:07 h11 attr 0 90
+6:07 h11 attr 1 3
+6:07 h11 attr 2 2.0
+6:07 h11 attr 3 -25
+6:07 h11 attr 4 6
+6:07 effect slp 11
+6:08.9 h11 attr 4 6
+6:09 h11 attr 4 3
+6:09 effect slp 11
+6:10.9 h11 attr 4 3
+6:11 h11 attr 4 4
+6:11 effect slp 11
+6:12.9 h11 attr 4 4
+6:13 h11 attr 4 2
+6:13 effect slp 11
+6:08 h10 fade 0.0
+# bring back flicker
+6:15 h8 fade 0.0
+6:15 h8 attr 1 2.0
+6:15 h8 attr 0 200.0
+# launch video
+6:15 h12 fade 1.0
+6:15 h12 file movies/Neptune/Neptune05_Stretch_sm.mp4
+6:15 h12 attr 0 30
+6:15 h12 attr 1 0
+6:15 h12 attr 2 2
+6:15 effect video 12
+6:16 h8 fade 0.5
+# change flickering colors
+6:53 h8 fade 0.5
+6:54 h8 color1 255 255 255
+6:54 h8 color2 255 240 200
+6:54 h8 fade 0.7
+7:20 h8 color1 255 255 255
+7:20 h8 color2 255 60 120
+# fade in a circle
+7:30 h13 fade 0.0
+7:30 h13 color1 36 79 123
+7:30 h13 attr 0 90
+7:30 h13 attr 1 0
+7:30 h13 attr 2 50
+7:30 h13 attr 3 1.0
+7:30 effect circle 13
+7:34 h8 fade 0.0
+7:34 h13 fade 1.0
+7:34 h13 attr 3 20.0
+7:53 h13 fade 0.0
