@@ -71,9 +71,12 @@ void setPixels(strip *s)
 	uint8_t *extrabuffer;
 	ssize_t ret;
 
+
 	ebsize = (int)ceil(((float)(5*s->numpixels+1))/1024.)*1024. - (5*s->numpixels+1);
 	extrabuffer = (uint8_t*) malloc(ebsize);
 	memset(extrabuffer, 0x00, ebsize);
+	
+
 //	printf("padding package by %d bytes\n", ebsize);
 
 	for (rev=0; rev<s->numpixels; rev++)
@@ -96,7 +99,7 @@ void setPixels(strip *s)
 	ret = write(fd, s->sendbuffer, 5*s->numpixels + 1);
 	ret = write(fd, extrabuffer, ebsize);
 	free(extrabuffer);
-	waitms(10);
+	waitms(30);
 
 }
 

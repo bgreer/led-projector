@@ -38,30 +38,36 @@ void effect_march(effect *eff, handle *h, float currtime)
 		}
 	}
 
+	// attr 2 is single-group on-time
+	// attr 4 is ramp-up fraction
+
 	// need to know what 'cycle' this is, use fmod?
 	// need to know how far we are in that cycle
 	cycle = floor((currtime - eff->starttime)*h->attr[1]);
 	pos = (currtime - eff->starttime)*h->attr[1] - cycle; // [0,1)
-	printf("%f %f %f %f\n", cycle, pos, h->attr[4], h->attr[2]);
+//	printf("%f %f %f %f\n", cycle, pos, h->attr[4], h->attr[2]);
 
 	for (ii=0; ii<NUMPIXELS; ii++)
 	{
 		if (group[ii] == 0.0)
 		{
 			if (pos < h->attr[4]*h->attr[2])
-				amp = 1.0; // rising
+				amp = pos / (h->attr[4]*h->attr[2]); // rising
 			else if (pos < h->attr[2])
-				amp = 1.0; // decaying
+				amp = 1.0 - (pos-h->attr[4]*h->attr[2])/(h->attr[2]*(1.0-h->attr[4])); // decaying
 			else
 				amp = 0.0; // dead
 			eff->pixels[0][ii] = h->color1[0] * h->fade * amp;
 			eff->pixels[1][ii] = h->color1[1] * h->fade * amp;
 			eff->pixels[2][ii] = h->color1[2] * h->fade * amp;
 		} else {
-			if (pos < h->attr[4]*h->attr[2]+0.5 && pos > 0.5)
-				amp = 1.0; // rising
+			if ((pos < h->attr[4]*h->attr[2]+0.5 && pos > 0.5) || 
+						(pos < h->attr[4]*h->attr[2]-0.5 && pos < 0.5))
+				amp = (pos-0.5) / (h->attr[4]*h->attr[2]); // rising TODO fix for second conditional
 			else if (pos < h->attr[2]+0.5 && pos > 0.5)
-				amp = 1.0; // decaying
+				amp = 1.0 - (pos-0.5-h->attr[4]*h->attr[2])/(h->attr[2]*(1.0-h->attr[4])); // decaying, first segment
+			else if (pos < h->attr[2]-0.5 && pos < 0.5)
+				amp = 1.0 - (pos+0.5-h->attr[4]*h->attr[2])/(h->attr[2]*(1.0-h->attr[4])); // decaying, next segment
 			else
 				amp = 0.0; // dead
 			eff->pixels[0][ii] = h->color2[0] * h->fade * amp;
@@ -88,7 +94,10 @@ void effect_slp (effect *eff, handle *h, float currtime)
 	mintheta = h->attr[0]*DEGTORAD - PI/2. + h->attr[4]*TWOPI;
 	maxtheta = h->attr[0]*DEGTORAD + PI/2. + h->attr[4]*TWOPI;
 
-	loc = mintheta - (h->attr[1]*0.16) + h->attr[3] * 0.16 * (currtime - eff->starttime);
+	if (h->attr[3] > 0.0)
+		loc = mintheta - (h->attr[1]*0.16) + h->attr[3] * 0.16 * (currtime - eff->starttime);
+	else
+		loc = maxtheta + (h->attr[1]*0.16) + h->attr[3] * 0.16 * (currtime - eff->starttime);
 
 	for (ii=0; ii<NUMPIXELS; ii++)
 	{

@@ -16,22 +16,27 @@ int main (int argc, char *argv[])
 	VideoCapture cap1(0);
 //	VideoCapture cap2(2);
 	char buffer[32];
-	int ii, ij, index, numframes;
+	int ii, ij, index, numframes, pause;
 	// for sequencer
 	effect eff[MAXEFFECTS];
 	handle h[MAXHANDLES];
 	int numeffects;
-	float time;
+	float currtime, starttime;
 	float pixels[3][NUMPIXELS];
 	// command-line stuff
-	tag t[6];
+	tag t[7];
 	int geom_cyl, geom_sph, geom_cam, geom_file;
 	char portname[128], fname_seq[128];
 	int retval, port_provided;
 
-	srand(1234);
+	// timing
+	struct timespec time_curr, time_last;
+	float dt;
+
+	srand(time(NULL));
 
 	// collect some cameras from the command-line?
+	starttime = 0.0;
 	geom_cam = 0;
 	geom_cyl = 0;
 	geom_sph = 1;
@@ -55,8 +60,11 @@ int main (int argc, char *argv[])
 	t[5].name = "-seq"; // sequence file
 	t[5].type = TAGTYPE_STRING;
 	t[5].data = fname_seq;
+	t[6].name = "-time";
+	t[6].type = TAGTYPE_FLOAT;
+	t[6].data = &starttime;
 
-	retval = parse_params(argc, argv, 6, t);
+	retval = parse_params(argc, argv, 7, t);
 
 	// connect to arduino
 	if (strcmp(portname,"")==0)
@@ -120,12 +128,6 @@ int main (int argc, char *argv[])
 
 	setPixels(&s);
 
-	while (1)
-	{
-			if (char(cvWaitKey(1)) == 32) // 27 is esc
-			break;
-
-	}
 
 	//////////////////////////////////////////////////////////////////
 	
@@ -153,6 +155,7 @@ int main (int argc, char *argv[])
 				{
 					vid.set(CV_CAP_PROP_POS_FRAMES, ij);
 					vid.read(allframes[ij]);
+					GaussianBlur(allframes[ij], allframes[ij], Size(0,0), 2.0);
 				}
 				eff[ii].ptr = allframes;
 			} else {
@@ -165,8 +168,17 @@ int main (int argc, char *argv[])
 	}
 	printf("Done Preloading.\n");
 
-	time = 0.0;
-	while (time < 120.0)
+	currtime = starttime;
+	printf("Press Space to Begin at Time=%f.\n", currtime);
+	while (1)
+	{
+			if (char(cvWaitKey(1)) == 32) // 27 is esc
+			break;
+	}
+
+	pause = 0;
+	clock_gettime(CLOCK_MONOTONIC, &time_last);
+	while (currtime < 60.0*20.0)
 	{
 		memset(pixels[0], 0, NUMPIXELS*sizeof(float));
 		memset(pixels[1], 0, NUMPIXELS*sizeof(float));
@@ -175,12 +187,12 @@ int main (int argc, char *argv[])
 		for (ii=0; ii<numeffects; ii++)
 		{
 			// is this effect supposed to be running?
-			if (eff[ii].starttime <= time)
+			if (eff[ii].starttime <= currtime)
 			{
 				// update the handle
-				update_handle(&(h[eff[ii].handleindex]), time);
+				update_handle(&(h[eff[ii].handleindex]), currtime);
 				// run effect
-				eff[ii].run(eff+ii, h+eff[ii].handleindex, time);
+				eff[ii].run(eff+ii, h+eff[ii].handleindex, currtime);
 				// add to primary pixel buffer
 				for (ij=0; ij<NUMPIXELS; ij++)
 				{
@@ -199,7 +211,7 @@ int main (int argc, char *argv[])
 			s.b[ij] = process_pixelval(pixels[2][ij]);
 		}
 		// send processed pixel buffer to led driver
-		printf("sending pixels at time=%f\n", time);
+		printf("sending pixels at time=%f\n", currtime);
 //		res.setTo(0);
 		for (ii=0; ii<s.numpixels; ii++)
 		{
@@ -210,9 +222,19 @@ int main (int argc, char *argv[])
 
 
 		setPixels(&s);
-		time += 1.0/28.; // make this real-time?
+		clock_gettime(CLOCK_MONOTONIC, &time_curr);
+		dt = (timespec_to_sec(&time_curr) - timespec_to_sec(&time_last));
+//		printf("%f\n", 1./dt);
+		currtime += dt; // make this real-time?
+		clock_gettime(CLOCK_MONOTONIC, &time_last);
 		if (char(cvWaitKey(1)) == 32) // 27 is esc
-			break;
+		{
+			pause = 1;
+			while (pause)
+			{
+				if ((char(cvWaitKey(1)) == 32)) pause = 0;
+			}
+		}
 	}
 	
 	//////////////////////////////////////////////////////////////////
@@ -357,3 +379,9 @@ uint8_t process_pixelval (float val)
 
 	return (uint8_t) proc;
 }
+
+float timespec_to_sec (struct timespec *t)
+{
+	return (float)(t->tv_sec) + 1e-9 * (uint32_t)(t->tv_nsec);
+}
+

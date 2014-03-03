@@ -8,8 +8,8 @@
 #define TWOPI 6.28318530718
 #define DEGTORAD 0.01745329251
 
-#define MAXKEYS 32
-#define MAXHANDLES 32
+#define MAXKEYS 64
+#define MAXHANDLES 64
 #define MAXEFFECTS 128
 #define MAXDATA 5000
 #define NUMPIXELS 232
@@ -124,6 +124,7 @@ float unit_random ();
 uint8_t process_pixelval (float val);
 void waitms (long ms);
 static int getLine (char *prmpt, char *buff, size_t sz);
+float timespec_to_sec (struct timespec *t);
 
 // images.cpp
 void map_image (Mat *img, strip *s);
