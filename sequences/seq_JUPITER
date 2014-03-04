@@ -1,0 +1,260 @@
+# JUPITER runtime 7:46
+# start with a movie
+0:00 h1 fade 0.0
+0:00 h1 file movies/Jupiter/Jupiter01b_Stretch_sm.mp4
+0:00 h1 attr 0 30
+0:00 h1 attr 1 0
+0:00 h1 attr 2 2
+0:00 effect video 1
+0:02 h1 fade 1.0
+0:19 h1 fade 1.0
+# solid 
+0:19 h2 fade 0.0
+0:19 h2 color1 235 193 133
+0:19 effect solid 2
+0:20 h1 fade 0.0
+0:20 h2 fade 1.0
+# twinkle out
+0:21 h3 fade 0.0
+0:21 h3 color1 235 193 133
+0:21 h3 color2 235 193 133
+0:21 h3 attr 0 300
+0:21 h3 attr 1 0.8
+0:21 h3 attr 2 0.3
+0:21 effect flicker 3
+0:24 h2 fade 1.0
+0:24 h3 fade 1.0
+0:24 h2 fade 0.0
+# fade in new video
+0:24 h4 fade 0.0
+0:24 h4 file movies/Jupiter/Jupiter02b_Stretch_sm.mp4
+0:24 h4 attr 0 30
+0:24 h4 attr 1 0
+0:24 h4 attr 2 2
+0:24 effect video 4
+0:26 h3 fade 0.0
+0:26 h4 fade 1.0
+# new video
+0:34 h5 fade 1.0
+0:34 h5 file movies/Jupiter/Jupiter03_Stretch_sm.mp4
+0:34 h5 attr 0 30
+0:34 h5 attr 1 0
+0:34 h5 attr 2 2
+0:34 effect video 5
+# fade video out
+0:44 h5 fade 1.0
+0:45 h5 fade 0.0
+# more flickering
+0:45 h3 fade 0.0
+0:45 h3 color1 221 124 156
+0:45 h3 color1 235 193 133
+0:45 h3 attr 0 400
+0:45 h3 attr 1 0.8
+0:45 h3 attr 2 0.3
+0:46 h3 fade 1.0
+# pulse intensity
+0:48 h3 fade 0.5
+0:50 h3 fade 1.0
+0:52 h3 fade 0.5
+0:54 h3 fade 1.0
+0:56 h3 fade 0.5
+0:58 h3 fade 1.0
+# fade in video
+1:00 h6 fade 0.0
+1:00 h6 file movies/Jupiter/Jupiter04_Stretch_sm.mp4
+1:00 h6 attr 0 30
+1:00 h6 attr 1 0
+1:00 h6 attr 2 2
+1:00 effect video 6
+1:01 h3 fade 0.0
+1:01 h6 fade 1.0
+# fade video out
+1:22 h6 fade 1.0
+# bring back the flicker
+1:22 h3 fade 0.0
+1:23 h6 fade 0.0
+1:23 h3 fade 1.0
+# pulse intensity
+1:25 h3 fade 0.5
+1:27 h3 fade 1.0
+1:29 h3 fade 0.5
+1:31 h3 fade 1.0
+1:33 h3 fade 0.5
+1:35 h3 fade 1.0
+1:37 h3 fade 0.5
+1:39 h3 fade 1.0
+1:40 h3 fade 1.0
+# fade in video
+1:40 h7 fade 0.0
+1:40 h7 file movies/Jupiter/Jupiter05_Stretch_sm.mp4
+1:40 h7 attr 0 30
+1:40 h7 attr 1 0
+1:40 h7 attr 2 2
+1:40 effect video 7
+1:41 h3 fade 0.0
+1:41 h7 fade 1.0
+# next video
+1:50 h8 fade 1.0
+1:50 h8 file movies/Jupiter/Jupiter06_Stretch_sm.mp4
+1:50 h8 attr 0 30
+1:50 h8 attr 1 0
+1:50 h8 attr 2 2
+1:50 effect video 8
+# next video
+2:10 h9 fade 1.0
+2:10 h9 file movies/Jupiter/Jupiter07_sm.mov
+2:10 h9 attr 0 30
+2:10 h9 attr 1 0
+2:10 h9 attr 2 2
+2:10 effect video 9
+# fade out
+2:32 h9 fade 1.0
+# solid
+2:33 h9 fade 0.0
+# solid and flicker
+2:33 h10 fade 0.0
+2:33 h10 color1 235 193 133
+2:33 effect solid 10
+2:33 h3 fade 0.0
+2:34 h10 fade 0.7
+2:35 h3 fade 0.3
+# fade out flicker
+2:46 h3 fade 0.3
+2:46 h10 fade 0.7
+2:50 h10 fade 0.3
+2:50 h3 fade 0.0
+# sparse flicker
+2:50 h11 fade 1.0
+2:50 h11 color1 235 193 133
+2:50 h11 color2 221 124 156
+2:50 h11 attr 0 200
+2:50 h11 attr 1 0.5
+2:50 h11 attr 2 0.2
+2:50 effect flicker 11
+2:52 h10 fade 0.0
+# fade out
+3:06 h11 fade 1.0
+# start video
+3:06 h12 fade 0.0
+3:06 h12 file movies/Jupiter/Jupiter08_Stretch_sm.mp4
+3:06 h12 attr 0 30
+3:06 h12 attr 1 0
+3:06 h12 attr 2 2
+3:06 effect video 12
+3:07 h12 fade 1.0
+3:07 h11 fade 0.0
+# next video
+3:28 h13 fade 1.0
+3:28 h13 file movies/Jupiter/Jupiter09_Reflect_sm.mp4
+3:28 h13 attr 0 30
+3:28 h13 attr 1 0
+3:28 h13 attr 2 0
+3:28 effect video 13
+# next movie
+3:48 h14 fade 1.0
+3:48 h14 file movies/Jupiter/Jupiter10_Stretched_sm.mp4
+3:48 h14 attr 0 30
+3:48 h14 attr 1 0
+3:48 h14 attr 2 2
+3:48 effect video 14
+# video ends early, fill with solid
+4:07 h10 fade 0.0
+4:07.01 h10 fade 1.0
+4:08.99 h10 fade 1.0
+4:09 h10 fade 0.0
+# next video
+4:09 h15 fade 1.0
+4:09 h15 file movies/Jupiter/Jupiter11_Reflect_sm.mp4
+4:09 h15 attr 0 30
+4:09 h15 attr 1 0
+4:09 h15 attr 2 0
+4:09 effect video 15
+# end early
+4:30.99 h15 fade 1.0
+4:31 h15 fade 0.0
+# next video
+4:31 h14 fade 1.0
+4:31 h14 file movies/Jupiter/Jupiter12_Stretch_sm.mp4
+4:31 h14 attr 0 30
+4:31 h14 attr 1 0
+4:31 h14 attr 2 2
+4:31 effect video 14
+# fade out
+4:53 h14 fade 1.0
+4:54 h14 fade 0.0
+# fade in twinkling
+4:54 h3 fade 0.0
+4:54 h3 color1 235 193 133
+4:54 h3 color2 235 193 133
+4:54 h3 attr 0 300
+4:54 h3 attr 1 1.5
+4:55 h3 fade 1.0
+5:15 h3 color1 221 124 156
+5:15 h3 color2 221 124 156
+5:15 h3 attr 0 300
+5:15 h3 attr 1 1.5
+5:24 h3 attr 0 350
+5:24 h3 attr 1 0.7
+5:34 h3 fade 1.0
+# cross-fade to next video
+5:34 h15 fade 0.0
+5:34 h15 file movies/Jupiter/Jupiter13_Stretch_sm.mp4
+5:34 h15 attr 0 30
+5:34 h15 attr 1 0
+5:34 h15 attr 2 2
+5:34 effect video 15
+5:35 h3 fade 0.0
+5:35 h15 fade 1.0
+# fade out
+5:45 h15 fade 1.0
+# fade harch twinlking back in
+5:45 h11 fade 0.0
+5:46 h15 fade 0.0
+5:46 h11 fade 1.0
+5:57 h11 fade 1.0
+5:58 h11 fade 0.0
+# next video
+5:58 h16 fade 1.0
+5:58 h16 file movies/Jupiter/Jupiter14_Stretch_sm.mp4
+5:58 h16 attr 0 30
+5:58 h16 attr 1 0
+5:58 h16 attr 2 2
+5:58 effect video 16
+6:09 h11 fade 0.0
+6:10 h11 fade 1.0
+6:21 h11 fade 1.0
+6:34 h11 fade 0.5
+6:45 h11 fade 0.2
+# next video, lasts 37s
+6:45 h17 fade 0.0
+6:45 h17 file movies/Jupiter/Jupiter15_Reflect_sm.mp4
+6:45 h17 attr 0 30
+6:45 h17 attr 1 0
+6:45 h17 attr 2 0
+6:45 effect video 17
+6:46 h11 fade 0.0
+6:46 h17 fade 1.0
+#fade out
+7:21 h17 fade 1.0
+# fill with a spiral from 21 to 34
+7:21 h18 fade 1.0
+7:21 h18 color1 235 193 133
+7:21 h18 attr 0 220
+7:21 h18 attr 1 250
+7:21 h18 attr 2 -50
+7:21 h18 attr 3 450
+7:21 effect packet 18
+7:22 h17 fade 0.0
+7:34 h19 fade 0.0
+7:34 h19 file movies/Jupiter/Jupiter17_Stretch_sm.mp4
+7:34 h19 attr 0 30
+7:34 h19 attr 1 0
+7:34 h19 attr 2 2
+7:34 effect video 19
+7:35 h19 fade 1.0
+# solid
+7:43 h20 fade 1.0
+7:43 h20 color1 235 193 133
+7:43 effect solid 20
+7:46 h20 fade 1.0
+7:47 h20 fade 0.0
