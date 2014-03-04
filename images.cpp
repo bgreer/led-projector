@@ -25,10 +25,14 @@ void interp_pixel (Mat *img, float x, float y, uint8_t *r, uint8_t *g, uint8_t *
 
 	ptr = (uint8_t*) img->data;
 
+/*
 	mindim = img->cols;
 	if (img->rows < mindim) mindim = img->rows;
 	xpix = x * mindim + (img->cols-mindim)/2.;
 	ypix = y * mindim + (img->rows-mindim)/2.;
+	*/
+	xpix = x * img->cols;
+	ypix = y * img->rows;
 
 //	printf("%f %f %d %d\n", xpix, ypix, img->cols, img->rows);
 

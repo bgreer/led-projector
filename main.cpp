@@ -155,7 +155,7 @@ int main (int argc, char *argv[])
 				{
 					vid.set(CV_CAP_PROP_POS_FRAMES, ij);
 					vid.read(allframes[ij]);
-	//				GaussianBlur(allframes[ij], allframes[ij], Size(0,0), 2.0);
+//					GaussianBlur(allframes[ij], allframes[ij], Size(0,0), 5.0);
 				}
 				eff[ii].ptr = allframes;
 			} else {
